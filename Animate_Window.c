@@ -1,11 +1,13 @@
 #include <Windows.h> 
 #include <mmsystem.h>
+
 #pragma comment(lib, "Winmm.lib")
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam); 
 
 // long long __stdcall WndProc(struct HWND__* hwnd, unsinged int uMsg, unsigned long long wParam, 
 //                                 long long lParam); 
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -14,6 +16,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     WNDCLASSEX wnd; 
     MSG msg; 
+
+
 
     HWND hwnd = NULL; 
 
