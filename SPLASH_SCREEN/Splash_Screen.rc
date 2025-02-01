@@ -1,0 +1,7 @@
+#include<windows.h>
+#include"Splash_Screen.h"
+
+MY_BITMAP BITMAP resources/CPA_Logo.bmp
+MYICON ICON resources/App_Logo.ico
+
+
