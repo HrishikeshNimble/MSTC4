@@ -1,0 +1,13 @@
+#include <windows.h>  // Include the Windows header
+#include "resource.h" // Include your resource header
+
+
+IDB_BITMAP1 BITMAP "g.bmp"
+IDB_BITMAP2 BITMAP "a.bmp"
+IDB_BITMAP3 BITMAP "n.bmp"
+IDB_BITMAP4 BITMAP "as.bmp"
+
+
+
+
+
