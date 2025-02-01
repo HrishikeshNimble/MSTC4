@@ -545,7 +545,7 @@ double getDistance(int x1,int y1, int x2,int y2 )
 	int delta_x=x2-x1;
 	int delta_y=y2-y1;
 	
-	distacne=pow(pow(delta_x,2.0f) + pow(delta_y,2.0f), (0.5f));
+	distacne = pow(pow(delta_x,2.0f) + pow(delta_y,2.0f), (0.5f));
 	return (distacne);
 }
 
