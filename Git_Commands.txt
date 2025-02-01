@@ -1,0 +1,16 @@
+************Git Push/Pull Commands******************
+
+***Do this step for the first time only***
+git clone "link" http link
+
+***Do this Steps EVERYTIME***
+git pull
+
+git add <filename>
+
+git commit -m "message"
+
+git push
+
+After git push , 
+add your github creds & sign-in to browser to authenticate your commit.
