@@ -296,13 +296,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
             MUSIC_PLAY_STATUS=FALSE;
         }
 
-        // Update the text color
+       
         UpdateTextColor();
-        InvalidateRect(hwnd, NULL, FALSE); // Trigger repaint to update the text color
+        InvalidateRect(hwnd, NULL, FALSE); 
         break;
-
-   
-		
 
 
 	case WM_DESTROY:
