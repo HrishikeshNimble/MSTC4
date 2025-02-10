@@ -1,0 +1,12 @@
+#include <windows.h>  // Include the Windows header
+#include "resource.h" // Include your resource header
+
+
+IDC_DATA_ICON ICON "main_icon.ico"
+IDB_MAIN_BITMAP1 BITMAP "main1.bmp"   
+IDB_MAIN_BITMAP2 BITMAP "main2.bmp"   
+IDB_MAIN_BITMAP3 BITMAP "main3.bmp"   
+IDB_MAIN_BITMAP4 BITMAP "main4.bmp"   
+
+
+SONG WAVE song.WAV

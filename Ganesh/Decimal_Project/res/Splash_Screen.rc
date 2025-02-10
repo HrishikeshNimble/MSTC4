@@ -1,0 +1,6 @@
+#include "..\include\Splash_Screen.h"
+
+MY_BITMAP BITMAP icons/CPA_Logo.bmp
+MYICON ICON icons/App_Logo.ico
+
+
