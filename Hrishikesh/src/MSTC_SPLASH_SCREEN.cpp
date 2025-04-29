@@ -16,9 +16,11 @@
 #pragma comment(lib, "Winmm.lib")
 
 #define TIMER_ID 1
+#define TIMER_ID2 2
 #define MAX_POSITION 780
 #define INCREMENT 10
-#define NUM_POINTS 13
+#define NUM_POINTS 8
+
 
 HPEN choosePenColor(int, BRUSH_SIZE);
 void hvnDrawLines(HPEN, int, int, int, int, POINT*, HWND);
@@ -33,15 +35,17 @@ int* setCirclePointsParam(int cRadius);
 /******************************************/
 void refPoints(void);
 void linesBackground(void);
+void linesBackground2(void);
 void sceneOne(void);
 void sceneTwo(void);
 void sceneThree(void);
 void sceneFour(void);
 void sceneFive(void);
 void sceneSix(void);
-void mpreProcessor(void);
-void dataPoints(int*,int);
-void dataPointsY(int*, int);
+void mpreProcessor(HBRUSH);
+void gDataPoints(void);
+void dataPoints(void);
+void dataPointsY(void);
 void dataPointsNeg(int*, int);
 /********************************************/
 HWND ghwnd = NULL;
@@ -128,6 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd); // VIMP
 	SetTimer(hwnd, TIMER_ID, 20, NULL);
+	SetTimer(hwnd, TIMER_ID2, 2000, NULL);
 
 	// 9. Message Loop
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -199,7 +204,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				break;
 			case 'N':
 			case 'n':
-				sceneCounter = 1;
+				sceneCounter++;
 				break;
 			case 'P':
 			case 'p':
@@ -223,50 +228,25 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
      case WM_TIMER:
 		 if (wParam == TIMER_ID) {
-			 //if (rectWidth < 1000) {
-				// rectWidth += rectSpeed;
-				// InvalidateRect(hwnd, NULL, FALSE);
-			 //}
-			 //if (j != 4)
-			 //{
-				// if (i < 20) {
-				//	 //i++;
-				//	 i += rectSpeed;
-				//	 if (i >= 20)
-				//	 {
-				//		 i = 0;
-				//		 j++;
-				//		 if (j >= 4)
-				//		 {
-				//			 i = 0;
-				//			 j = 4;
-				//		 }
-				//	 }
-
-				//	 InvalidateRect(hwnd, NULL, FALSE);
-				// }
-			 //}
-			 /*if (j != 4)
+			 sceneCounter = 1;
+		
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 if (wParam == TIMER_ID2) {
+			 KillTimer(ghwnd, TIMER_ID);
+			 sceneCounter++;
+			/* for (int i = 0; i < MAX_POSITION; i++)
 			 {
-				 if (gi <= 350)
+				 for (int j = 0; j < NUM_POINTS; j++)
 				 {
-					 gi++;
-
-					 if (gi > 350)
-					 {
-						 gi = 0;
-						 j++;
-						 if (j >= 4)
-						 {
-							 gi = 0;
-							 j = 4;
-						 }
-					 }       
+					 InvalidateRect(hwnd, NULL, FALSE);
 				 }
 			 }*/
-			 
-			 //gwParam = wParam;
 			 InvalidateRect(hwnd, NULL, FALSE);
+			 if (sceneCounter > 6)
+			 {
+				 KillTimer(ghwnd, TIMER_ID2);
+			 }
 		 }
 
 		break;
@@ -377,7 +357,7 @@ HPEN choosePenColor(int penColor, BRUSH_SIZE brushSize)
 			break;
 		default:
 			hLinePen=CreatePen(PS_SOLID, brushSize , orange);
-			textColor=orange;
+			textColor=orange;	
 			break;
 	}
 	return(hLinePen);
@@ -558,9 +538,32 @@ void initialize(void)
 
 void display(void)
 {
-	
+	if (sceneCounter == 1)
+	{
+		sceneOne();
+	}
+	if (sceneCounter == 2)
+	{
+		sceneTwo();
+	}
+	if (sceneCounter == 3)
+	{
+		sceneThree();
+	}
+	if (sceneCounter == 4)
+	{
+		sceneFour();
+	}
+	if (sceneCounter == 5)
+	{
+		sceneFive();
+	}
+	if (sceneCounter == 6)
+	{
+		sceneSix();
+	}
 	//sceneOne();
-	sceneTwo();
+	//sceneTwo();
 	//sceneThree();
 	//sceneFour();
 	//sceneFive();
@@ -662,6 +665,7 @@ void refPoints(void)
 
 	
 }
+
 void sceneOne(void)
 {
 	HPEN hPenRed;
@@ -698,7 +702,7 @@ void sceneOne(void)
 	
 	
 	linesBackground();
-	
+
 	hPenRed = choosePenColor(5, 5);
 	SelectObject(hMemDC, hPenRed);
 	//Rectangle(hMemDC, 320, 400, 1600, 680);
@@ -712,12 +716,12 @@ void sceneOne(void)
 	Polygon(hMemDC, aptplane1, 6);
 	Polygon(hMemDC, aptplane2, 6);
 	hPenRed = choosePenColor(4, 5);
-	HFONT hFont = CreateFont(70, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	HFONT hFont = CreateFont(80, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont);
 	//SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 165, 0));
-	TextOut(hMemDC, 520, 500, "When Code Meets The Machine", 27);
+	TextOut(hMemDC, 450, 500, "When Code Meets The Machine", 27);
 	EndPaint(ghwnd, &ps);
 	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
 	InvalidateRect(ghwnd, NULL, NULL);
@@ -766,7 +770,7 @@ void sceneTwo(void)
 	//FillRect(hMemDC, &rgn, orange);
 	//Polygon(hMemDC, upperRect, 4);
 
-	mpreProcessor();
+	mpreProcessor(orange);
 
 	HFONT hFont = CreateFont(70, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont);
@@ -832,8 +836,9 @@ void sceneTwo(void)
 
 	hPenRed = choosePenColor(4, 10);
 	SelectObject(hMemDC, hPenRed);*/
-
-	dataPoints(apt,435);
+	/*gDataPoints();
+	dataPoints();
+	dataPointsY();*/
 	/*dataPoints(apt,465);
 	dataPoints(apt,495);
 	dataPoints(apt,525);
@@ -862,83 +867,114 @@ void sceneTwo(void)
 
 }
 
-void dataPoints(int* apt,int yConst)
+void gDataPoints(void)
 {
 	HPEN hPenRed = choosePenColor(4, 10);
 	SelectObject(hMemDC, hPenRed);
-	if (j <= 5000)
+	int dmax = MAX_POSITION;
+	int* apt = NULL;
+	apt = (int*)malloc(sizeof(int) * dmax * NUM_POINTS);
+
+	for (int i = 0; i < dmax; i++)
 	{
-		
-			for (int i = 0; i < NUM_POINTS; i++) {
-				int x = apt[i];
-				int y = yConst;
-
-			
-				MoveToEx(hMemDC, x, y, NULL);
-				LineTo(hMemDC, x, y);
-				
-				
-
-
-				apt[i] += INCREMENT;
-				if (apt[i] > MAX_POSITION) {
-					apt[i] = i * INCREMENT;  // Reset to the initial position
-
-
-				}
-			}
-		
-	
-	
-		
-	
-		j++;			// Increment point positions and reset if max is exceeded
-		if (j == 5000)
+		for (int j = 0; j < NUM_POINTS; j++)
 		{
-			fprintf(gpFile, "dataPoints() -> j = %d.\n", j);
-			j = 5000;
-			for (int i = 0; i < NUM_POINTS; i++) {
-				apt[i] = 0;
+			apt[(i * NUM_POINTS) + j + 0] = i;
+			apt[(i * NUM_POINTS) + j + 1] = 435 + (j*30);
+
+			if (apt[i] < MAX_POSITION)
+			{
+				MoveToEx(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1], NULL);
+				LineTo(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1]);
 			}
-	
+			
 		}
 	}
 
-	//free(apt);
+	free(apt);
+	apt = NULL;
 }
 
-void dataPointsY(int*apt, int yConst)
+void dataPoints(void)
 {
 	HPEN hPenRed = choosePenColor(4, 10);
 	SelectObject(hMemDC, hPenRed);
-	int j = 0;
-	if (j <= 500)
+	int dmax = MAX_POSITION;
+	int xNeg = 1140;
+	int* apt = NULL;
+	apt = (int*)malloc(sizeof(int) * dmax * NUM_POINTS);
+
+	for (int i = 0; i < dmax; i++)
 	{
-		for (int i = 0; i < NUM_POINTS; i++) {
-			int x = apt[i];
-			int y = yConst;
-			MoveToEx(hMemDC, x, y, NULL);
-			LineTo(hMemDC, x, y);
-			// Increment point positions and reset if max is exceeded
-			apt[i] += INCREMENT;
-			if (apt[i] > MAX_POSITION) {
-				apt[i] = i * INCREMENT;  // Reset to the initial position
-
-
-			}
-		}
-
-		j++;
-		if (j == 500)
+		for (int j = 0; j < NUM_POINTS; j++)
 		{
-			fprintf(gpFile, "dataPoints() -> j = %d.\n", j);
-			j = 500;
-			for (int i = 0; i < NUM_POINTS; i++) {
-				apt[i] = 0;
-			}
+			apt[(i * NUM_POINTS) + j + 0] = 1920 - i;
+			apt[(i * NUM_POINTS) + j + 1] = 435 + (j * 30);
 
+				MoveToEx(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1], NULL);
+				LineTo(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1]);
 		}
 	}
+
+	free(apt);
+	apt = NULL;
+}
+
+void dataPointsY(void)
+{
+
+	HPEN hPenRed = choosePenColor(5, 10);
+	SelectObject(hMemDC, hPenRed);
+	int dmax = 400;
+	int xNeg = 11;
+	int* apt = NULL;
+	apt = (int*)malloc(sizeof(int) * dmax * 11);
+
+	for (int i = 0; i < dmax; i++)
+	{
+		for (int j = 0; j < xNeg; j++)
+		{
+			apt[(i * xNeg) + j + 0] = 810 + (j * 30);
+			apt[(i * xNeg) + j + 1] = 680 + i;
+
+			MoveToEx(hMemDC, apt[(i * xNeg) + j + 0], apt[(i * xNeg) + j + 1], NULL);
+			LineTo(hMemDC, apt[(i * xNeg) + j + 0], apt[(i * xNeg) + j + 1]);
+		}
+	}
+
+	free(apt);
+	apt = NULL;
+
+	//HPEN hPenRed = choosePenColor(4, 10);
+	//SelectObject(hMemDC, hPenRed);
+	//int j = 0;
+	//if (j <= 500)
+	//{
+	//	for (int i = 0; i < NUM_POINTS; i++) {
+	//		int x = apt[i];
+	//		int y = yConst;
+	//		MoveToEx(hMemDC, x, y, NULL);
+	//		LineTo(hMemDC, x, y);
+	//		// Increment point positions and reset if max is exceeded
+	//		apt[i] += INCREMENT;
+	//		if (apt[i] > MAX_POSITION) {
+	//			apt[i] = i * INCREMENT;  // Reset to the initial position
+
+
+	//		}
+	//	}
+
+	//	j++;
+	//	if (j == 500)
+	//	{
+	//		fprintf(gpFile, "dataPoints() -> j = %d.\n", j);
+	//		j = 500;
+	//		for (int i = 0; i < NUM_POINTS; i++) {
+	//			apt[i] = 0;
+	//		}
+
+	//	}
+	//}
 
 }
 
@@ -1003,7 +1039,7 @@ void sceneThree(void)
 	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
 	SelectObject(hMemDC, hBitmap);
 	linesBackground();
-	refPoints();
+	//refPoints();
 
 	hPenRed = choosePenColor(8, 5);
 	SelectObject(hMemDC, hPenRed);
@@ -1016,7 +1052,7 @@ void sceneThree(void)
 	//FillRect(hMemDC, &rgn, orange);
 	//Polygon(hMemDC, upperRect, 4);
 
-	//mpreProcessor();
+	mpreProcessor(orange);
 
 	HFONT hFont = CreateFont(70, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont);
@@ -1089,7 +1125,7 @@ void sceneFour(void)
 	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
 	SelectObject(hMemDC, hBitmap);
 	linesBackground();
-	refPoints();
+	//refPoints();
 
 	hPenRed = choosePenColor(0, 5);
 	SelectObject(hMemDC, hPenRed);
@@ -1102,7 +1138,7 @@ void sceneFour(void)
 	//FillRect(hMemDC, &rgn, orange);
 	//Polygon(hMemDC, upperRect, 4);
 
-	//mpreProcessor();
+	mpreProcessor(orange);
 
 	HFONT hFont = CreateFont(70, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont);
@@ -1177,16 +1213,13 @@ void sceneFive(void)
 
 	hPenRed = choosePenColor(0, 5);
 	SelectObject(hMemDC, hPenRed);
-	//SelectObject(hMemDC, hPenRed);
-	//SetPolyFillMode(hMemDC, WINDING);
 
 	//Polygon(hMemDC, scene2Poly, 4);
 	RECT rgn = { 630, 840, 720, 940 };
-	//Rectangle(hMemDC, 800, 420, 1120, 660);
-	//FillRect(hMemDC, &rgn, orange);
-	//Polygon(hMemDC, upperRect, 4);
 
-	//mpreProcessor();
+	mpreProcessor(orange);
+
+
 
 	HFONT hFont = CreateFont(70, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont);
@@ -1245,11 +1278,9 @@ void sceneSix(void)
 
 	HPEN hPenRed;
 	HPEN hLinePen;
-	POINT scene2Poly[4] = { 800, 420, 1120, 420,
-							 1120, 660, 800, 660 };
-	POINT FileI[5] = { 915, 170, 915, 270,
-					   1005, 270, 1005, 180,
-					   995, 170 };
+	POINT FileI[5] = { 350, 600, 350, 700,
+					   440, 700, 440, 610,
+					   430, 600 };
 
 	/*
 	600, 840, 600, 940,
@@ -1267,35 +1298,20 @@ void sceneSix(void)
 	hMemDC = CreateCompatibleDC(hdc);
 	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
 	SelectObject(hMemDC, hBitmap);
-	linesBackground();
-	refPoints();
+	linesBackground2();
+	//refPoints();
 
 	hPenRed = choosePenColor(0, 5);
 	SelectObject(hMemDC, hPenRed);
-	//SelectObject(hMemDC, hPenRed);
-	//SetPolyFillMode(hMemDC, WINDING);
 
-	//Polygon(hMemDC, scene2Poly, 4);
-	RECT rgn = { 630, 840, 720, 940 };
-	//Rectangle(hMemDC, 800, 420, 1120, 660);
-	//FillRect(hMemDC, &rgn, orange);
-	//Polygon(hMemDC, upperRect, 4);
 
-	mpreProcessor();
-
-	HFONT hFont = CreateFont(70, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	HFONT hFont = CreateFont(35, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont);
 	//SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 165, 0));
-	TextOut(hMemDC, 755, 55, "Pre-Processor", 13);
+	TextOut(hMemDC, 300, 450, "Pre-Processor", 13);
 
-	HFONT hFont1 = CreateFont(50, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
-	SelectObject(hMemDC, hFont1);
-	SetBkMode(hMemDC, TRANSPARENT);
-	SelectObject(hMemDC, hPenRed);
-	SetTextColor(hMemDC, RGB(255, 165, 0));
-	TextOut(hMemDC, 576, 310, "Include Header Files & Expand Macros", 36);
 
 	// .i File
 	hPenRed = choosePenColor(4, 5);
@@ -1308,20 +1324,130 @@ void sceneSix(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 165, 0));
-	TextOut(hMemDC, 940, 180, ".ii", 3);
+	TextOut(hMemDC, 375, 610, ".ii", 3);
 
 	HFONT hFontI = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFontI);
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 165, 0));
-	TextOut(hMemDC, 940, 225, ".i", 2);
+	TextOut(hMemDC, 375, 650, ".i", 2);
 
-	// .exe
+	//Compiler
 
-	POINT FileExe[5] = { 1230, 840, 1230, 940,
-						   1320, 940, 1320, 850,
-						   1310, 840 };
+	POINT FileAsm[5] = { 620, 600, 620, 700,
+					   710, 700, 710, 610,
+					   700, 600 };
+	hPenRed = choosePenColor(8, 5);
+	SelectObject(hMemDC, hPenRed);
+	Polygon(hMemDC, FileAsm, 5);
+
+	HFONT hFontAsm = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontAsm);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(2, 151, 255));
+	TextOut(hMemDC, 625, 620, ".asm", 4);
+
+	HFONT hFontS = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontS);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(2, 151, 255));
+	TextOut(hMemDC, 625, 650, ".s", 2);
+
+	hPenRed = choosePenColor(8, 5);
+	SelectObject(hMemDC, hPenRed);
+
+	HFONT hFontComp = CreateFont(35, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontComp);
+	SetBkMode(hMemDC, OPAQUE);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(2, 151, 255));
+	TextOut(hMemDC, 600, 450, "Compiler", 8);
+
+	//Assembler
+	POINT FileObj[5] = { 880, 600, 880, 700,
+					   970, 700, 970, 610,
+					   960, 600 };
+	hPenRed = choosePenColor(10, 5);
+	SelectObject(hMemDC, hPenRed);
+	Polygon(hMemDC, FileObj, 5);
+
+	HFONT hFontObj = CreateFont(38, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontObj);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(13, 190, 17));
+	TextOut(hMemDC, 895, 615, ".obj", 4);
+
+	HFONT hFontO = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontO);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(13, 190, 17));
+	TextOut(hMemDC, 895, 645, ".o", 2);
+
+	hPenRed = choosePenColor(0, 5);
+	SelectObject(hMemDC, hPenRed);
+
+	HFONT hFontAsmb = CreateFont(35, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontAsmb);
+	SetBkMode(hMemDC, OPAQUE);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(13, 190, 17));
+	TextOut(hMemDC, 850, 450, "Assembler", 9);
+
+
+	//Linker
+	POINT FileLib[5] = { 1125, 600, 1125, 700,
+					   1215, 700, 1215, 610,
+					   1205, 600 };
+	hPenRed = choosePenColor(6, 5);
+	SelectObject(hMemDC, hPenRed);
+	Polygon(hMemDC, FileLib, 5);
+
+	HFONT hFontLib = CreateFont(38, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontLib);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(255, 0, 255));
+	TextOut(hMemDC, 1145, 615, ".lib", 4);
+
+	HFONT hFontA = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontA);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(255, 0, 255));
+	TextOut(hMemDC, 1145, 645, ".a", 2);
+	
+
+	hPenRed = choosePenColor(0, 5);
+	SelectObject(hMemDC, hPenRed);
+
+	HFONT hFontLink = CreateFont(35, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontLink);
+	SetBkMode(hMemDC, OPAQUE);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(255, 0, 255));
+	TextOut(hMemDC, 1125, 450, "Linker", 6);
+
+	//Executable
+	hPenRed = choosePenColor(8, 5);
+	SelectObject(hMemDC, hPenRed);
+
+	HFONT hFontExeFile = CreateFont(35, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontExeFile);
+	SetBkMode(hMemDC, OPAQUE);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(0, 191, 255));
+	TextOut(hMemDC, 1325, 450, "Executable", 10);
+
+
+	//Executable
+	POINT FileExe[5] = { 1360, 600, 1360, 700,
+					  1450, 700, 1450, 610,
+					   1440, 600 };
 
 	hPenRed = choosePenColor(8, 5);
 	SelectObject(hMemDC, hPenRed);
@@ -1332,17 +1458,17 @@ void sceneSix(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(0, 191, 255));
-	TextOut(hMemDC, 1243, 865, ".exe", 4);
+	TextOut(hMemDC, 1374, 625, ".exe", 4);
 
 
 	POINT triangleOrange[3] = { 750, 890, 730, 870,
 								730, 910 };
 
-	hPenRed = choosePenColor(4, 4);
+	/*hPenRed = choosePenColor(4, 4);
 	SelectObject(hMemDC, hPenRed);
 	SelectObject(hMemDC, orangePoly);
 	Polygon(hMemDC, triangleOrange, 3);
-	DeleteObject(orangePoly);
+	DeleteObject(orangePoly);*/
 
 	EndPaint(ghwnd, &ps);
 	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
@@ -1351,8 +1477,7 @@ void sceneSix(void)
 	ReleaseDC(ghwnd, hdc);
 }
 
-
-void mpreProcessor(void)
+void mpreProcessor(HBRUSH colorBrush)
 {
 	HBRUSH orange = CreateSolidBrush(RGB(255, 165, 0));
 	HPEN hLinePen;
@@ -1364,7 +1489,7 @@ void mpreProcessor(void)
 	RECT rgn = { 800, 420, 1120, 660 };
 	
 	Rectangle(hMemDC, 800, 420, 1120, 660);
-	FillRect(hMemDC, &rgn, orange);
+	FillRect(hMemDC, &rgn, colorBrush);
 
 	//Pins
 	SelectObject(hMemDC, hLinePen);
@@ -2005,6 +2130,645 @@ void linesBackground(void)
 	DeleteObject(hPenWhitedot);
 	DeleteObject(hPenWhitedotbig);
 	
+}
+
+void linesBackground2(void)
+{
+
+	HPEN hPenWhiteline;
+	HPEN hPenWhitedot;
+	HPEN hPenWhitedotbig;
+	//
+
+	hPenWhiteline = choosePenColor(0, 4);
+	hPenWhitedot = choosePenColor(0, 12);
+	hPenWhitedotbig = choosePenColor(0, 15);
+	SelectObject(hMemDC, hPenWhiteline);
+
+	MoveToEx(hMemDC, 0, 400, NULL);
+	LineTo(hMemDC, 250, 400);
+	MoveToEx(hMemDC, 250, 400, NULL);
+	LineTo(hMemDC, 300, 350);
+	MoveToEx(hMemDC, 300, 350, NULL);
+	LineTo(hMemDC, 500, 350);
+
+	MoveToEx(hMemDC, 0, 300, NULL);
+	LineTo(hMemDC, 80, 300);
+	MoveToEx(hMemDC, 80, 300, NULL);
+	LineTo(hMemDC, 80, 350);
+
+	MoveToEx(hMemDC, 0, 280, NULL);
+	LineTo(hMemDC, 110, 280);
+
+	MoveToEx(hMemDC, 150, 340, NULL);
+	LineTo(hMemDC, 200, 300);
+	MoveToEx(hMemDC, 200, 300, NULL);
+	LineTo(hMemDC, 380, 300);
+	MoveToEx(hMemDC, 380, 300, NULL);
+	LineTo(hMemDC, 430, 260);
+
+	MoveToEx(hMemDC, 30, 230, NULL);
+	LineTo(hMemDC, 100, 230);
+	MoveToEx(hMemDC, 100, 230, NULL);
+	LineTo(hMemDC, 100, 250);
+	MoveToEx(hMemDC, 100, 250, NULL);
+	LineTo(hMemDC, 350, 250);
+
+	MoveToEx(hMemDC, 0, 170, NULL);
+	LineTo(hMemDC, 70, 170);
+	MoveToEx(hMemDC, 70, 170, NULL);
+	LineTo(hMemDC, 90, 200);
+	MoveToEx(hMemDC, 90, 200, NULL);
+	LineTo(hMemDC, 200, 200);
+
+	MoveToEx(hMemDC, 250, 180, NULL);
+	LineTo(hMemDC, 460, 180);
+	MoveToEx(hMemDC, 460, 180, NULL);
+	LineTo(hMemDC, 500, 250);
+	MoveToEx(hMemDC, 500, 250, NULL);
+	LineTo(hMemDC, 570, 250);
+
+	MoveToEx(hMemDC, 0, 80, NULL);
+	LineTo(hMemDC, 200, 80);
+	MoveToEx(hMemDC, 200, 80, NULL);
+	LineTo(hMemDC, 250, 130);
+	MoveToEx(hMemDC, 250, 130, NULL);
+	LineTo(hMemDC, 500, 130);
+
+	MoveToEx(hMemDC, 50, 120, NULL);
+	LineTo(hMemDC, 150, 120);
+
+	MoveToEx(hMemDC, 300, 0, NULL);
+	LineTo(hMemDC, 300, 80);
+	MoveToEx(hMemDC, 300, 80, NULL);
+	LineTo(hMemDC, 600, 80);
+
+	MoveToEx(hMemDC, 40, 40, NULL);
+	LineTo(hMemDC, 200, 40);
+	MoveToEx(hMemDC, 200, 0, NULL);
+	LineTo(hMemDC, 200, 40);
+
+	MoveToEx(hMemDC, 500, 0, NULL);
+	LineTo(hMemDC, 500, 50);
+	MoveToEx(hMemDC, 500, 50, NULL);
+	LineTo(hMemDC, 700, 50);
+	MoveToEx(hMemDC, 700, 50, NULL);
+	LineTo(hMemDC, 700, 120);
+
+	//Reverse
+
+	MoveToEx(hMemDC, 0, 680, NULL);
+	LineTo(hMemDC, 250, 680);
+	MoveToEx(hMemDC, 250, 680, NULL);
+	LineTo(hMemDC, 300, 730);
+	MoveToEx(hMemDC, 300, 730, NULL);
+	LineTo(hMemDC, 500, 730);
+
+	MoveToEx(hMemDC, 0, 780, NULL);
+	LineTo(hMemDC, 80, 780);
+	MoveToEx(hMemDC, 80, 780, NULL);
+	LineTo(hMemDC, 80, 730);
+
+	MoveToEx(hMemDC, 0, 800, NULL);
+	LineTo(hMemDC, 110, 800);
+
+	MoveToEx(hMemDC, 150, 740, NULL);
+	LineTo(hMemDC, 200, 780);
+	MoveToEx(hMemDC, 200, 780, NULL);
+	LineTo(hMemDC, 380, 780);
+	MoveToEx(hMemDC, 380, 780, NULL);
+	LineTo(hMemDC, 430, 820);
+
+	MoveToEx(hMemDC, 30, 850, NULL);
+	LineTo(hMemDC, 100, 850);
+	MoveToEx(hMemDC, 100, 850, NULL);
+	LineTo(hMemDC, 100, 830);
+	MoveToEx(hMemDC, 100, 830, NULL);
+	LineTo(hMemDC, 350, 830);
+
+	MoveToEx(hMemDC, 0, 908, NULL);
+	LineTo(hMemDC, 70, 908);
+	MoveToEx(hMemDC, 70, 908, NULL);
+	LineTo(hMemDC, 90, 880);
+	MoveToEx(hMemDC, 90, 880, NULL);
+	LineTo(hMemDC, 200, 880);
+
+	MoveToEx(hMemDC, 250, 900, NULL);
+	LineTo(hMemDC, 460, 900);
+	MoveToEx(hMemDC, 460, 900, NULL);
+	LineTo(hMemDC, 500, 830);
+	MoveToEx(hMemDC, 500, 830, NULL);
+	LineTo(hMemDC, 570, 830);
+
+	MoveToEx(hMemDC, 0, 1000, NULL);
+	LineTo(hMemDC, 200, 1000);
+	MoveToEx(hMemDC, 200, 1000, NULL);
+	LineTo(hMemDC, 250, 950);
+	MoveToEx(hMemDC, 250, 950, NULL);
+	LineTo(hMemDC, 500, 950);
+
+	MoveToEx(hMemDC, 50, 960, NULL);
+	LineTo(hMemDC, 150, 960);
+
+	MoveToEx(hMemDC, 300, 1080, NULL);
+	LineTo(hMemDC, 300, 1000);
+	MoveToEx(hMemDC, 300, 1000, NULL);
+	LineTo(hMemDC, 600, 1000);
+
+	MoveToEx(hMemDC, 40, 1040, NULL);
+	LineTo(hMemDC, 200, 1040);
+	MoveToEx(hMemDC, 200, 1080, NULL);
+	LineTo(hMemDC, 200, 1040);
+
+	MoveToEx(hMemDC, 500, 1080, NULL);
+	LineTo(hMemDC, 500, 1030);
+	MoveToEx(hMemDC, 500, 1030, NULL);
+	LineTo(hMemDC, 700, 1030);
+	MoveToEx(hMemDC, 700, 1030, NULL);
+	LineTo(hMemDC, 700, 960);
+
+	// Dots 4,9,10,6,8
+	hPenWhitedot = choosePenColor(4, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+
+	MoveToEx(hMemDC, 500, 350, NULL);
+	LineTo(hMemDC, 500, 350);
+
+	hPenWhitedot = choosePenColor(9, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 80, 350, NULL);
+	LineTo(hMemDC, 80, 350);
+
+	hPenWhitedot = choosePenColor(10, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 110, 280, NULL);
+	LineTo(hMemDC, 110, 280);
+
+	hPenWhitedot = choosePenColor(6, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 30, 230, NULL);
+	LineTo(hMemDC, 30, 230);
+
+	hPenWhitedot = choosePenColor(8, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 350, 250, NULL);
+	LineTo(hMemDC, 350, 250);
+
+	hPenWhitedot = choosePenColor(9, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 250, 180, NULL);
+	LineTo(hMemDC, 250, 180);
+	hPenWhitedot = choosePenColor(8, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 570, 250, NULL);
+	LineTo(hMemDC, 570, 250);
+
+	hPenWhitedot = choosePenColor(10, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 50, 120, NULL);
+	LineTo(hMemDC, 50, 120);
+
+	hPenWhitedot = choosePenColor(4, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 150, 120, NULL);
+	LineTo(hMemDC, 150, 120);
+
+	hPenWhitedot = choosePenColor(6, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 600, 80, NULL);
+	LineTo(hMemDC, 600, 80);
+
+	hPenWhitedot = choosePenColor(9, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 40, 40, NULL);
+	LineTo(hMemDC, 40, 40);
+
+	//Reverse
+	hPenWhitedot = choosePenColor(4, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 500, 730, NULL);
+	LineTo(hMemDC, 500, 730);
+
+	hPenWhitedot = choosePenColor(6, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 80, 730, NULL);
+	LineTo(hMemDC, 80, 730);
+
+	hPenWhitedot = choosePenColor(10, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 110, 800, NULL);
+	LineTo(hMemDC, 110, 800);
+
+	hPenWhitedot = choosePenColor(8, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 30, 850, NULL);
+	LineTo(hMemDC, 30, 850);
+
+	hPenWhitedot = choosePenColor(6, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 350, 830, NULL);
+	LineTo(hMemDC, 350, 830);
+
+	hPenWhitedot = choosePenColor(10, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 250, 900, NULL);
+	LineTo(hMemDC, 250, 900);
+
+	hPenWhitedot = choosePenColor(4, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 570, 830, NULL);
+	LineTo(hMemDC, 570, 830);
+
+	hPenWhitedot = choosePenColor(9, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 50, 960, NULL);
+	LineTo(hMemDC, 50, 960);
+
+	hPenWhitedot = choosePenColor(8, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 150, 960, NULL);
+	LineTo(hMemDC, 150, 960);
+
+	hPenWhitedot = choosePenColor(6, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 600, 1000, NULL);
+	LineTo(hMemDC, 600, 1000);
+
+	hPenWhitedot = choosePenColor(10, 12);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 40, 1040, NULL);
+	LineTo(hMemDC, 40, 1040);
+
+	//
+	hPenWhitedotbig = choosePenColor(9, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 150, 340, NULL);
+	LineTo(hMemDC, 150, 340);
+
+	hPenWhitedotbig = choosePenColor(6, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 430, 260, NULL);
+	LineTo(hMemDC, 430, 260);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 200, 200, NULL);
+	LineTo(hMemDC, 200, 200);
+
+	hPenWhitedotbig = choosePenColor(10, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 500, 130, NULL);
+	LineTo(hMemDC, 500, 130);
+
+	hPenWhitedotbig = choosePenColor(4, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 700, 120, NULL);
+	LineTo(hMemDC, 700, 120);
+
+	//Reverse
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 150, 740, NULL);
+	LineTo(hMemDC, 150, 740);
+
+	hPenWhitedotbig = choosePenColor(10, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 430, 820, NULL);
+	LineTo(hMemDC, 430, 820);
+
+
+	hPenWhitedotbig = choosePenColor(6, 15);
+	SelectObject(hMemDC, hPenWhitedotbig); 
+	MoveToEx(hMemDC, 200, 880, NULL);
+	LineTo(hMemDC, 200, 880);
+
+	hPenWhitedotbig = choosePenColor(9, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 500, 950, NULL);
+	LineTo(hMemDC, 500, 950);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 700, 960, NULL);
+	LineTo(hMemDC, 700, 960);
+
+	/********Right side Lines*******************************************************************************/
+
+	SelectObject(hMemDC, hPenWhiteline);
+
+	MoveToEx(hMemDC, 1920, 400, NULL);
+	LineTo(hMemDC, 1670, 400);
+	MoveToEx(hMemDC, 1670, 400, NULL);
+	LineTo(hMemDC, 1620, 350);
+	MoveToEx(hMemDC, 1620, 350, NULL);
+	LineTo(hMemDC, 1420, 350);
+
+	MoveToEx(hMemDC, 1920, 300, NULL);
+	LineTo(hMemDC, 1840, 300);
+	MoveToEx(hMemDC, 1840, 300, NULL);
+	LineTo(hMemDC, 1840, 350);
+
+	MoveToEx(hMemDC, 1920, 280, NULL);
+	LineTo(hMemDC, 1810, 280);
+
+	MoveToEx(hMemDC, 1770, 340, NULL);
+	LineTo(hMemDC, 1720, 300);
+	MoveToEx(hMemDC, 1720, 300, NULL);
+	LineTo(hMemDC, 1540, 300);
+	MoveToEx(hMemDC, 1540, 300, NULL);
+	LineTo(hMemDC, 1490, 260);
+
+	MoveToEx(hMemDC, 1890, 230, NULL);
+	LineTo(hMemDC, 1820, 230);
+	MoveToEx(hMemDC, 1820, 230, NULL);
+	LineTo(hMemDC, 1820, 250);
+	MoveToEx(hMemDC, 1820, 250, NULL);
+	LineTo(hMemDC, 1570, 250);
+
+	MoveToEx(hMemDC, 1920, 170, NULL);
+	LineTo(hMemDC, 1850, 170);
+	MoveToEx(hMemDC, 1850, 170, NULL);
+	LineTo(hMemDC, 1830, 200);
+	MoveToEx(hMemDC, 1830, 200, NULL);
+	LineTo(hMemDC, 1720, 200);
+
+	MoveToEx(hMemDC, 1670, 180, NULL);
+	LineTo(hMemDC, 1460, 180);
+	MoveToEx(hMemDC, 1460, 180, NULL);
+	LineTo(hMemDC, 1420, 250);
+	MoveToEx(hMemDC, 1420, 250, NULL);
+	LineTo(hMemDC, 1350, 250);
+
+	MoveToEx(hMemDC, 1920, 80, NULL);
+	LineTo(hMemDC, 1720, 80);
+	MoveToEx(hMemDC, 1720, 80, NULL);
+	LineTo(hMemDC, 1670, 130);
+	MoveToEx(hMemDC, 1670, 130, NULL);
+	LineTo(hMemDC, 1420, 130);
+
+	MoveToEx(hMemDC, 1870, 120, NULL);
+	LineTo(hMemDC, 1770, 120);
+
+	MoveToEx(hMemDC, 1620, 0, NULL);
+	LineTo(hMemDC, 1620, 80);
+	MoveToEx(hMemDC, 1620, 80, NULL);
+	LineTo(hMemDC, 1320, 80);
+
+	MoveToEx(hMemDC, 1880, 40, NULL);
+	LineTo(hMemDC, 1720, 40);
+	MoveToEx(hMemDC, 1720, 0, NULL);
+	LineTo(hMemDC, 1720, 40);
+
+	MoveToEx(hMemDC, 1420, 0, NULL);
+	LineTo(hMemDC, 1420, 50);
+	MoveToEx(hMemDC, 1420, 50, NULL);
+	LineTo(hMemDC, 1220, 50);
+	MoveToEx(hMemDC, 1220, 50, NULL);
+	LineTo(hMemDC, 1220, 120);
+
+	//Reverse
+
+	MoveToEx(hMemDC, 1920, 680, NULL);
+	LineTo(hMemDC, 1670, 680);
+	MoveToEx(hMemDC, 1670, 680, NULL);
+	LineTo(hMemDC, 1620, 730);
+	MoveToEx(hMemDC, 1620, 730, NULL);
+	LineTo(hMemDC, 1420, 730);
+
+	MoveToEx(hMemDC, 1920, 780, NULL);
+	LineTo(hMemDC, 1840, 780);
+	MoveToEx(hMemDC, 1840, 780, NULL);
+	LineTo(hMemDC, 1840, 730);
+
+	MoveToEx(hMemDC, 1920, 800, NULL);
+	LineTo(hMemDC, 1810, 800);
+
+	MoveToEx(hMemDC, 1770, 740, NULL);
+	LineTo(hMemDC, 1720, 780);
+	MoveToEx(hMemDC, 1720, 780, NULL);
+	LineTo(hMemDC, 1540, 780);
+	MoveToEx(hMemDC, 1540, 780, NULL);
+	LineTo(hMemDC, 1490, 820);
+
+	MoveToEx(hMemDC, 1890, 850, NULL);
+	LineTo(hMemDC, 1820, 850);
+	MoveToEx(hMemDC, 1820, 850, NULL);
+	LineTo(hMemDC, 1820, 830);
+	MoveToEx(hMemDC, 1820, 830, NULL);
+	LineTo(hMemDC, 1570, 830);
+
+	MoveToEx(hMemDC, 1920, 908, NULL);
+	LineTo(hMemDC, 1850, 908);
+	MoveToEx(hMemDC, 1850, 908, NULL);
+	LineTo(hMemDC, 1830, 880);
+	MoveToEx(hMemDC, 1830, 880, NULL);
+	LineTo(hMemDC, 1720, 880);
+
+	MoveToEx(hMemDC, 1670, 900, NULL);
+	LineTo(hMemDC, 1460, 900);
+	MoveToEx(hMemDC, 1460, 900, NULL);
+	LineTo(hMemDC, 1420, 830);
+	MoveToEx(hMemDC, 1420, 830, NULL);
+	LineTo(hMemDC, 1350, 830);
+
+	MoveToEx(hMemDC, 1920, 1000, NULL);
+	LineTo(hMemDC, 1720, 1000);
+	MoveToEx(hMemDC, 1720, 1000, NULL);
+	LineTo(hMemDC, 1670, 950);
+	MoveToEx(hMemDC, 1670, 950, NULL);
+	LineTo(hMemDC, 1420, 950);
+
+	MoveToEx(hMemDC, 1870, 960, NULL);
+	LineTo(hMemDC, 1770, 960);
+
+	MoveToEx(hMemDC, 1620, 1080, NULL);
+	LineTo(hMemDC, 1620, 1000);
+	MoveToEx(hMemDC, 1620, 1000, NULL);
+	LineTo(hMemDC, 1320, 1000);
+
+	MoveToEx(hMemDC, 1880, 1040, NULL);
+	LineTo(hMemDC, 1720, 1040);
+	MoveToEx(hMemDC, 1720, 1080, NULL);
+	LineTo(hMemDC, 1720, 1040);
+
+	MoveToEx(hMemDC, 1420, 1080, NULL);
+	LineTo(hMemDC, 1420, 1030);
+	MoveToEx(hMemDC, 1420, 1030, NULL);
+	LineTo(hMemDC, 1220, 1030);
+	MoveToEx(hMemDC, 1220, 1030, NULL);
+	LineTo(hMemDC, 1220, 960);
+
+	//
+
+	hPenWhitedotbig = choosePenColor(4, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+
+	MoveToEx(hMemDC, 1420, 350, NULL);
+	LineTo(hMemDC, 1420, 350);
+
+	hPenWhitedotbig = choosePenColor(6, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1840, 350, NULL);
+	LineTo(hMemDC, 1840, 350);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1810, 280, NULL);
+	LineTo(hMemDC, 1810, 280);
+
+	hPenWhitedotbig = choosePenColor(10, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1890, 230, NULL);
+	LineTo(hMemDC, 1890, 230);
+
+	hPenWhitedotbig = choosePenColor(9, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1570, 250, NULL);
+	LineTo(hMemDC, 1570, 250);
+
+	hPenWhitedotbig = choosePenColor(6, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1670, 180, NULL);
+	LineTo(hMemDC, 1670, 180);
+
+	hPenWhitedotbig = choosePenColor(10, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1350, 250, NULL);
+	LineTo(hMemDC, 1350, 250);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1870, 120, NULL);
+	LineTo(hMemDC, 1870, 120);
+
+	hPenWhitedotbig = choosePenColor(4, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1770, 120, NULL);
+	LineTo(hMemDC, 1770, 120);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1320, 80, NULL);
+	LineTo(hMemDC, 1320, 80);
+
+	hPenWhitedotbig = choosePenColor(9, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1880, 40, NULL);
+	LineTo(hMemDC, 1880, 40);
+
+	//Reverse
+
+	hPenWhitedotbig = choosePenColor(4, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1420, 730, NULL);
+	LineTo(hMemDC, 1420, 730);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1840, 730, NULL);
+	LineTo(hMemDC, 1840, 730);
+
+	hPenWhitedotbig = choosePenColor(10, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1810, 800, NULL);
+	LineTo(hMemDC, 1810, 800);
+
+	hPenWhitedotbig = choosePenColor(6, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1890, 850, NULL);
+	LineTo(hMemDC, 1890, 850);
+
+	hPenWhitedotbig = choosePenColor(9, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1570, 830, NULL);
+	LineTo(hMemDC, 1570, 830);
+
+	hPenWhitedotbig = choosePenColor(10, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1670, 900, NULL);
+	LineTo(hMemDC, 1670, 900);
+
+	hPenWhitedotbig = choosePenColor(9, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1350, 830, NULL);
+	LineTo(hMemDC, 1350, 830);
+
+	hPenWhitedotbig = choosePenColor(4, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1870, 960, NULL);
+	LineTo(hMemDC, 1870, 960);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1770, 960, NULL);
+	LineTo(hMemDC, 1770, 960);
+
+	hPenWhitedotbig = choosePenColor(6, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1320, 1000, NULL);
+	LineTo(hMemDC, 1320, 1000);
+
+	hPenWhitedotbig = choosePenColor(9, 15);
+	SelectObject(hMemDC, hPenWhitedot);
+	MoveToEx(hMemDC, 1880, 1040, NULL);
+	LineTo(hMemDC, 1880, 1040);
+
+	//
+	hPenWhitedotbig = choosePenColor(10, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1770, 340, NULL);
+	LineTo(hMemDC, 1770, 340);
+
+	hPenWhitedotbig = choosePenColor(6, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1490, 260, NULL);
+	LineTo(hMemDC, 1490, 260);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1720, 200, NULL);
+	LineTo(hMemDC, 1720, 200);
+
+	hPenWhitedotbig = choosePenColor(4, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1420, 130, NULL);
+	LineTo(hMemDC, 1420, 130);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1220, 120, NULL);
+	LineTo(hMemDC, 1220, 120);
+
+	//Reverse
+	hPenWhitedotbig = choosePenColor(9, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1770, 740, NULL);
+	LineTo(hMemDC, 1770, 740);
+
+	hPenWhitedotbig = choosePenColor(4, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1490, 820, NULL);
+	LineTo(hMemDC, 1490, 820);
+
+	hPenWhitedotbig = choosePenColor(8, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1720, 880, NULL);
+	LineTo(hMemDC, 1720, 880);
+
+	hPenWhitedotbig = choosePenColor(6, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1420, 950, NULL);
+	LineTo(hMemDC, 1420, 950);
+
+	hPenWhitedotbig = choosePenColor(10, 15);
+	SelectObject(hMemDC, hPenWhitedotbig);
+	MoveToEx(hMemDC, 1220, 960, NULL);
+	LineTo(hMemDC, 1220, 960);
+
+	DeleteObject(hPenWhiteline);
+	DeleteObject(hPenWhitedot);
+	DeleteObject(hPenWhitedotbig);
+
 }
 
 void uninitialize(void)

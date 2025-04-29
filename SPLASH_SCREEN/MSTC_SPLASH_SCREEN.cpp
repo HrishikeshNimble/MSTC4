@@ -257,8 +257,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 					
 					if(pointIndex!=0)
 					{
-							MoveToEx(hdc,pVec_Splash_Screen_outer->list[pointIndex-1]->xPosition+SPLASH_SCREEN_X_SHIFT_OUTER,pVec_Splash_Screen_outer->list[pointIndex-1]->yPosition+SPLASH_SCREEN_Y_SHIFT_OUTER,NULL);
-							LineTo(hdc,pVec_Splash_Screen_outer->list[pointIndex]->xPosition+SPLASH_SCREEN_X_SHIFT_OUTER,pVec_Splash_Screen_outer->list[pointIndex]->yPosition+SPLASH_SCREEN_Y_SHIFT_OUTER);
+						MoveToEx(hdc, pVec_Splash_Screen_outer->list[pointIndex - 1]->xPosition + SPLASH_SCREEN_X_SHIFT_OUTER, pVec_Splash_Screen_outer->list[pointIndex - 1]->yPosition + SPLASH_SCREEN_Y_SHIFT_OUTER, NULL);
+						LineTo(hdc, pVec_Splash_Screen_outer->list[pointIndex]->xPosition + SPLASH_SCREEN_X_SHIFT_OUTER, pVec_Splash_Screen_outer->list[pointIndex]->yPosition + SPLASH_SCREEN_Y_SHIFT_OUTER);
 					}
 					
 				}
