@@ -17,21 +17,16 @@
 
 #define TIMER_ID 1
 #define TIMER_ID2 2
+#define TIMER_ID3 3
 #define MAX_POSITION 780
 #define INCREMENT 10
 #define NUM_POINTS 8
 
 
 HPEN choosePenColor(int, BRUSH_SIZE);
-void hvnDrawLines(HPEN, int, int, int, int, POINT*, HWND);
-int* setVerticesRect(int, int , int , int , int );
-int* setPointParam(int, int, int, int, int);
 void ToggleFullScreen(void);
 void uninitialize(void);
 void display(void);
-void hvnDrawRect(HPEN, HWND);
-int* setCirclePointsParam(int cRadius);
-
 /******************************************/
 void refPoints(void);
 void linesBackground(void);
@@ -42,8 +37,9 @@ void sceneThree(void);
 void sceneFour(void);
 void sceneFive(void);
 void sceneSix(void);
+void sceneSeven(void);
 void mpreProcessor(HBRUSH);
-void gDataPoints(void);
+void gDataPoints(int, int);
 void dataPoints(void);
 void dataPointsY(void);
 void dataPointsNeg(int*, int);
@@ -63,10 +59,13 @@ int k = 0;
 HBITMAP hBitmap = NULL;
 HDC hMemDC = NULL;
 int gcxScreen, gcyScreen;
-int sceneCounter = -1;
+int sceneCounter = 1;
 FILE* gpFile = NULL;
-
+BOOL renderPoints = FALSE;
 int rectSpeed = 1;
+int u = 0;
+int z = 0;
+int l = 0;
 //3
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) //ncmwindow show the window on how it should be shown e.g. maximized minimized or hidden etc.
 {
@@ -131,8 +130,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd); // VIMP
-	SetTimer(hwnd, TIMER_ID, 20, NULL);
-	SetTimer(hwnd, TIMER_ID2, 2000, NULL);
+	SetTimer(hwnd, TIMER_ID, 1, NULL);
+	SetTimer(hwnd, TIMER_ID2, 1, NULL);
+	SetTimer(hwnd, TIMER_ID3, 3000, NULL);
 
 	// 9. Message Loop
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -229,25 +229,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
      case WM_TIMER:
 		 if (wParam == TIMER_ID) {
 			 sceneCounter = 1;
-		
 			 InvalidateRect(hwnd, NULL, FALSE);
 		 }
 		 if (wParam == TIMER_ID2) {
 			 KillTimer(ghwnd, TIMER_ID);
-			 sceneCounter++;
-			/* for (int i = 0; i < MAX_POSITION; i++)
-			 {
-				 for (int j = 0; j < NUM_POINTS; j++)
-				 {
-					 InvalidateRect(hwnd, NULL, FALSE);
-				 }
-			 }*/
 			 InvalidateRect(hwnd, NULL, FALSE);
-			 if (sceneCounter > 6)
+		 }
+		 if (wParam == TIMER_ID3) {
+			
+			 sceneCounter++;
+			 InvalidateRect(hwnd, NULL, FALSE);
+			 if (sceneCounter > 7)
 			 {
-				 KillTimer(ghwnd, TIMER_ID2);
+
+				 sceneCounter = 7;
+				 KillTimer(ghwnd, TIMER_ID3);
 			 }
 		 }
+		
 
 		break;
 	 case WM_CLOSE:
@@ -363,191 +362,33 @@ HPEN choosePenColor(int penColor, BRUSH_SIZE brushSize)
 	return(hLinePen);
 }
 
-void hvnDrawRect(HPEN hPen, HWND hwnd)
-{
-
-	HDC hdc;
-	HDC hMemDC;
-	HBITMAP hBitmap;
-	PAINTSTRUCT ps;
-	RECT movingrect;
-	HBRUSH rectBrush = CreateSolidBrush(RGB(255, 0 , 0));
-	movingrect = { 100, 200, 100, 200 };
-	GetClientRect(hwnd, &movingrect);
-	hdc = GetDC(hwnd);
-	hdc = BeginPaint(hwnd, &ps);
-	hMemDC = CreateCompatibleDC(hdc);
-	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
-	ghdc = hdc;
-	SelectObject(hMemDC, hBitmap);
-	ReleaseDC(hwnd, hdc);
-	SelectObject(hMemDC, rectBrush);
-	Rectangle(hMemDC, 50, 50, 380, 150);
-
-	Rectangle(hMemDC, 50, 200, 380, 300);
-
-	Rectangle(hMemDC, 50, 350, 380, 450);
-
-	Rectangle(hMemDC, 50, 500, 380, 600);
-
-	Rectangle(hMemDC, 50, 650, 380, 750);
-
-	Rectangle(hMemDC, 500, 50, 830, 150);
-
-	Rectangle(hMemDC, 500, 200, 830, 300);
-					 			
-	Rectangle(hMemDC, 500, 350, 830, 450);
-					 			
-	Rectangle(hMemDC, 500, 500, 830, 600);
-					  			
-	Rectangle(hMemDC, 500, 650, 830, 750);
-
-
-
-	//FillRect(hMemDC, &movingrect, rectBrush);
-	//BitBlt(hdc, 0, 0, cxClient, cyClient, hMemDC, 0, 0, SRCPAINT);
-	//MoveToEx(hMemDC, xWidth, yHeight, pointRef);
-	//LineTo(hMemDC, lineToWidth, lineToHeight);
-
-	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	EndPaint(hwnd, &ps);
-	DeleteObject(hPen);
-	InvalidateRect(hwnd, NULL, NULL);
-}
-
-void hvnDrawLines(HPEN hLinePen, int xWidth, int yHeight, int lineToWidth, int lineToHeight, POINT* pointRef, HWND hwnd)
-{
-
-	HDC hdc;
-	PAINTSTRUCT ps;
-
-	hdc = GetDC(hwnd);
-	hdc = BeginPaint(hwnd, &ps);
-	hMemDC = CreateCompatibleDC(hdc);
-	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
-	SelectObject(hMemDC, hBitmap);
-	SelectObject(hMemDC, hLinePen);
-	MoveToEx(hMemDC, xWidth, yHeight, pointRef);
-	LineTo(hMemDC, lineToWidth, lineToHeight);
-	
-	EndPaint(hwnd, &ps);
-	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	InvalidateRect(hwnd, NULL, NULL);
-	DeleteObject(hLinePen);
-	ReleaseDC(hwnd, hdc);
-}
-
-int* setVerticesRect(int N, int xValueOne, int xValueTwo, int yValueOne, int yValueTwo)
-{
-	int* apt = NULL;
-	apt = (int*)malloc(sizeof(int) * N * 4);
-	if (apt == NULL)
-	{
-		fprintf(gpFile, "setVerticesRect() -> Failed to malloc.\n");
-	}
-	else
-	{
-		fprintf(gpFile, "setVerticesRect() -> malloc Successfully.\n");
-	}
-	int i = 0;
-	for (i = 0; i < N; i++)
-	{
-		apt[i] =  xValueOne;
-		apt[i + 1] =  yValueOne;
-			
-		apt[i+2] = xValueTwo;
-		apt[i+3] =  yValueOne;
-			
-		apt[i+4] =  xValueTwo;
-		apt[i+5] =  yValueTwo;
-			
-		apt[i+6] =  xValueOne;
-		apt[i+7] =  yValueTwo;
-
-		apt[i+8] =  xValueOne;
-		apt[i+9] =  yValueOne;
-
-	}
-	
-		return(apt);
-}
-
-int* setPointParam( int choose, int N, int xValueOne, int yValueOne,int speed)
-{
-	int* apt = NULL;
-	apt = (int*)malloc(sizeof(int) * 20);
-	if (apt == NULL)
-	{
-		fprintf(gpFile, "setPointParam() -> Failed to malloc.\n");
-	}
-	else
-	{
-		fprintf(gpFile, "setPointParam() -> malloc Successfully.\n");
-	}
-	int i = 0;
-	switch (choose)
-	{
-	case 1:
-		for (i = 1; i < N; i++)
-		{
-			apt[i] = xValueOne + (i * speed);
-			//apt[i * 2 + 1] = yValueOne;
-
-			
-		}
-		break;
-	case 2:
-		for (i = 1; i < N; i++)
-		{
-			apt[i] = xValueOne - (i * speed);
-			//apt[i * 2 + 1] = yValueOne;
-
-			fprintf(gpFile, "setPointParam() -> apt[%d] = %d.\n", i , apt[i]);
-		}
-		break;
-	}
-	
-
-	return(apt);
-}
-
-int* setCirclePointsParam(int cRadius)
-{
-	int* apt = NULL;
-	apt = (int*)malloc(sizeof(int) * 361 * 2);
-	int i;
-	float angle_rad;
-	for (i = 0; i <= 360; i++)
-	{
-		angle_rad = M_PI / 180 * i;
-		apt[i * 2 + 0] = cos(angle_rad) * (cRadius);
-		apt[i * 2 + 1] = sin(angle_rad) * (cRadius);
-
-		fprintf(gpFile, "setPointParam() -> cos = apt[%d] = %d.\n", i * 2 + 0, apt[i * 2 + 0]);
-		fprintf(gpFile, "setPointParam() -> sin = apt[%d] = %d.\n", i * 2 + 1, apt[i * 2 + 1]);
-	}
-	return(apt);
-}
-
 void initialize(void)
 {
-		apt = setPointParam(1, 20, 10, 435, INCREMENT);
-		//rightPoints = setPointParam(2, 20, 1920, 435, INCREMENT);
-	//circleApt = setCirclePointsParam(100);
+	
 }
 
 void display(void)
 {
+	HDC hdc;
+	PAINTSTRUCT ps;
+	hdc = GetDC(ghwnd);
+	hdc = BeginPaint(ghwnd, &ps);
+	hMemDC = CreateCompatibleDC(hdc);
+	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
+	SelectObject(hMemDC, hBitmap);
 	if (sceneCounter == 1)
 	{
 		sceneOne();
 	}
 	if (sceneCounter == 2)
 	{
+		renderPoints = TRUE;
 		sceneTwo();
 	}
 	if (sceneCounter == 3)
 	{
+		KillTimer(ghwnd, TIMER_ID2);
+		renderPoints = FALSE;
 		sceneThree();
 	}
 	if (sceneCounter == 4)
@@ -562,13 +403,24 @@ void display(void)
 	{
 		sceneSix();
 	}
+	if (sceneCounter == 7)
+	{
+		sceneSeven();
+	}
 	//sceneOne();
 	//sceneTwo();
 	//sceneThree();
 	//sceneFour();
 	//sceneFive();
 	//sceneSix();
+	//sceneSeven();
 
+	
+	EndPaint(ghwnd, &ps);
+	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
+	InvalidateRect(ghwnd, NULL, NULL);
+
+	ReleaseDC(ghwnd, hdc);
 }
 
 void refPoints(void)
@@ -692,13 +544,7 @@ void sceneOne(void)
 						   1780, 540, 1680, 640,
 						   1750,640, 1850, 540, };
 
-	HDC hdc;
-	PAINTSTRUCT ps;
-	hdc = GetDC(ghwnd);
-	hdc = BeginPaint(ghwnd, &ps);
-	hMemDC = CreateCompatibleDC(hdc);
-	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
-	SelectObject(hMemDC, hBitmap);
+	
 	
 	
 	linesBackground();
@@ -722,12 +568,7 @@ void sceneOne(void)
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 165, 0));
 	TextOut(hMemDC, 450, 500, "When Code Meets The Machine", 27);
-	EndPaint(ghwnd, &ps);
-	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	InvalidateRect(ghwnd, NULL, NULL);
 	DeleteObject(hPenRed);
-	ReleaseDC(ghwnd, hdc);
-
 }
 
 void sceneTwo(void)
@@ -749,26 +590,13 @@ void sceneTwo(void)
 	
 	HBRUSH orange = CreateSolidBrush(RGB(255, 165, 0));
 	HBRUSH orangePoly = CreateSolidBrush(RGB(255, 165, 0));
-	HDC hdc;
-	PAINTSTRUCT ps;
-	hdc = GetDC(ghwnd);
-	hdc = BeginPaint(ghwnd, &ps);
-	hMemDC = CreateCompatibleDC(hdc);
-	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
-	SelectObject(hMemDC, hBitmap);
+
+
 	linesBackground();
 	//refPoints();
 
 	hPenRed = choosePenColor(0, 5);
 	SelectObject(hMemDC, hPenRed);
-	//SelectObject(hMemDC, hPenRed);
-	//SetPolyFillMode(hMemDC, WINDING);
-	
-	//Polygon(hMemDC, scene2Poly, 4);
-	RECT rgn = { 630, 840, 720, 940 };
-	//Rectangle(hMemDC, 800, 420, 1120, 660);
-	//FillRect(hMemDC, &rgn, orange);
-	//Polygon(hMemDC, upperRect, 4);
 
 	mpreProcessor(orange);
 
@@ -806,93 +634,62 @@ void sceneTwo(void)
 	SetTextColor(hMemDC, RGB(255, 165, 0));
 	TextOut(hMemDC, 940, 225, ".i", 2);
 
-	//Arrows
-
+	gDataPoints(0,780);
+	//gDataPoints(100, 200);
+	//gDataPoints(200, 300);
+	//gDataPoints(300, 400);
+	//gDataPoints(400, 500);
+	//gDataPoints(500, 600);
+	//gDataPoints(600, 700);
 	
-	HPEN hPenArrows;
-	//
-
-	/*hPenArrows = choosePenColor(4, 5);
-	SelectObject(hMemDC, hPenArrows);
-
-	MoveToEx(hMemDC, 690, 890, NULL);
-	LineTo(hMemDC, 750, 890);*/
-
-	/*MoveToEx(hMemDC, 750, 890, NULL);
-	LineTo(hMemDC, 730, 870);
-
-	MoveToEx(hMemDC, 750, 890, NULL);
-	LineTo(hMemDC, 730, 910);*/
-
-
-	/*POINT triangleOrange[3] = { 750, 890, 740, 880,
-								740, 900 };
-
-	hPenRed = choosePenColor(4, 4);
-	SelectObject(hMemDC, hPenRed);
-	SelectObject(hMemDC, orangePoly);
-	Polygon(hMemDC, triangleOrange, 3);
-	DeleteObject(orangePoly);
-
-	hPenRed = choosePenColor(4, 10);
-	SelectObject(hMemDC, hPenRed);*/
-	/*gDataPoints();
-	dataPoints();
-	dataPointsY();*/
-	/*dataPoints(apt,465);
-	dataPoints(apt,495);
-	dataPoints(apt,525);
-	dataPoints(apt,555);
-	dataPoints(apt,585);
-	dataPoints(apt,615);
-	dataPoints(apt,645);*/
-
-	/*dataPointsNeg(rightPoints, 435);
-	dataPointsNeg(rightPoints, 465);
-	dataPointsNeg(rightPoints, 495);
-	dataPointsNeg(rightPoints, 525);
-	dataPointsNeg(rightPoints, 555);
-	dataPointsNeg(rightPoints, 585);
-	dataPointsNeg(rightPoints, 615);
-	dataPointsNeg(rightPoints, 645);*/
-	//dataPoints(rightPoints, 100);
 	
-	EndPaint(ghwnd, &ps);
-	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	InvalidateRect(ghwnd, NULL, NULL);
+	
+	
+
 	DeleteObject(hPenRed);
-	ReleaseDC(ghwnd, hdc);
-
-
 
 }
 
-void gDataPoints(void)
+void gDataPoints(int initialVal, int maxPosition)
 {
-	HPEN hPenRed = choosePenColor(4, 10);
+	HPEN hPenRed = choosePenColor(0, 10);
 	SelectObject(hMemDC, hPenRed);
-	int dmax = MAX_POSITION;
-	int* apt = NULL;
-	apt = (int*)malloc(sizeof(int) * dmax * NUM_POINTS);
+	
+	int llp = 0;
+	int llpp = 0;
+	int currVal = 0;
+	static int dmax = initialVal;
+	currVal = initialVal;
 
-	for (int i = 0; i < dmax; i++)
+	if(initialVal < maxPosition)
 	{
-		for (int j = 0; j < NUM_POINTS; j++)
-		{
-			apt[(i * NUM_POINTS) + j + 0] = i;
-			apt[(i * NUM_POINTS) + j + 1] = 435 + (j*30);
-
-			if (apt[i] < MAX_POSITION)
+			apt = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+			for (int j = 0; j < NUM_POINTS; j++)
 			{
-				MoveToEx(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1], NULL);
-				LineTo(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1]);
-			}
-			
-		}
-	}
+				apt[(j * 2) + 0] = dmax;
+				apt[(j * 2) + 1] = 435 + (j * 30);
 
-	free(apt);
-	apt = NULL;
+
+				MoveToEx(hMemDC, apt[(j * 2) + 0], apt[(j * 2) + 1], NULL);
+				LineTo(hMemDC, apt[(j * 2) + 0], apt[(j * 2) + 1]);
+
+
+				llp = (j * 2) + 0;
+				llpp = (j * 2) + 1;
+				fprintf(gpFile, "apt[%d] = %d\n", llp, apt[(j * 2) + 0]);
+				fprintf(gpFile, "apt[%d] = %d\n", llpp, apt[(j * 2) + 1]);
+			}
+			fprintf(gpFile, "dmax = %d\n", dmax);
+			//InvalidateRect(ghwnd, NULL, NULL);
+			dmax++;
+			if (initialVal >= maxPosition)
+			{
+
+				initialVal = currVal;
+			}
+			free(apt);
+	}
+	
 }
 
 void dataPoints(void)
@@ -911,11 +708,18 @@ void dataPoints(void)
 			apt[(i * NUM_POINTS) + j + 0] = 1920 - i;
 			apt[(i * NUM_POINTS) + j + 1] = 435 + (j * 30);
 
-				MoveToEx(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1], NULL);
-				LineTo(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1]);
+				/*MoveToEx(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1], NULL);
+				LineTo(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1]);*/
 		}
 	}
-
+	/*int k = 0;
+	if (k < (dmax * NUM_POINTS))
+	{
+		MoveToEx(hMemDC, apt[k* NUM_POINTS +0], apt[k * NUM_POINTS + 1], NULL);
+		LineTo(hMemDC, apt[k * NUM_POINTS + 0], apt[k * NUM_POINTS + 1]);
+		k++;
+	}
+	*/
 	free(apt);
 	apt = NULL;
 }
@@ -1016,42 +820,20 @@ void sceneThree(void)
 
 	HPEN hPenRed;
 	HPEN hLinePen;
-	POINT scene2Poly[4] = { 800, 420, 1120, 420,
-							 1120, 660, 800, 660 };
-	POINT FileAsm[5] = { 905, 170, 905, 270,
-					   995, 270, 995, 180,
-					   985, 170 };
+	POINT FileAsm[5] = { 915, 170, 915, 270,
+					   1005, 270, 1005, 180,
+					   995, 170 };
 
-	/*
-	600, 840, 600, 940,
-	690, 940, 690, 850,
-	680, 840 };
-*/
 
 
 	HBRUSH orange = CreateSolidBrush(RGB(2, 151, 255));
 	HBRUSH orangePoly = CreateSolidBrush(RGB(2, 151, 255));
-	HDC hdc;
-	PAINTSTRUCT ps;
-	hdc = GetDC(ghwnd);
-	hdc = BeginPaint(ghwnd, &ps);
-	hMemDC = CreateCompatibleDC(hdc);
-	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
-	SelectObject(hMemDC, hBitmap);
+
 	linesBackground();
 	//refPoints();
 
 	hPenRed = choosePenColor(8, 5);
 	SelectObject(hMemDC, hPenRed);
-	//SelectObject(hMemDC, hPenRed);
-	//SetPolyFillMode(hMemDC, WINDING);
-
-	//Polygon(hMemDC, scene2Poly, 4);
-	RECT rgn = { 630, 840, 720, 940 };
-	//Rectangle(hMemDC, 800, 420, 1120, 660);
-	//FillRect(hMemDC, &rgn, orange);
-	//Polygon(hMemDC, upperRect, 4);
-
 	mpreProcessor(orange);
 
 	HFONT hFont = CreateFont(70, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
@@ -1059,7 +841,7 @@ void sceneThree(void)
 	//SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(2, 151, 255));
-	TextOut(hMemDC, 820, 55, "Compiler", 8);
+	TextOut(hMemDC, 830, 55, "Compiler", 8);
 
 	HFONT hFont1 = CreateFont(50, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont1);
@@ -1078,21 +860,17 @@ void sceneThree(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(2, 151, 255));
-	TextOut(hMemDC, 910, 180, ".asm", 4);
+	TextOut(hMemDC, 920, 180, ".asm", 4);
 
 	HFONT hFontS = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFontS);
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(2, 151, 255));
-	TextOut(hMemDC, 940, 225, ".s", 2);
+	TextOut(hMemDC, 942, 225, ".s", 2);
 
 
-	EndPaint(ghwnd, &ps);
-	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	InvalidateRect(ghwnd, NULL, NULL);
 	DeleteObject(hPenRed);
-	ReleaseDC(ghwnd, hdc);
 	
 }
 
@@ -1102,41 +880,21 @@ void sceneFour(void)
 
 	HPEN hPenRed;
 	HPEN hLinePen;
-	POINT scene2Poly[4] = { 800, 420, 1120, 420,
-							 1120, 660, 800, 660 };
 	POINT FileObj[5] = { 915, 170, 915, 270,
 					   1005, 270, 1005, 180,
 					   995, 170 };
 
-	/*
-	600, 840, 600, 940,
-	690, 940, 690, 850,
-	680, 840 };
-*/
 
 
 	HBRUSH orange = CreateSolidBrush(RGB(13, 190, 17));
 	HBRUSH orangePoly = CreateSolidBrush(RGB(13, 190, 17));
-	HDC hdc;
-	PAINTSTRUCT ps;
-	hdc = GetDC(ghwnd);
-	hdc = BeginPaint(ghwnd, &ps);
-	hMemDC = CreateCompatibleDC(hdc);
-	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
-	SelectObject(hMemDC, hBitmap);
+
+
 	linesBackground();
 	//refPoints();
 
 	hPenRed = choosePenColor(0, 5);
 	SelectObject(hMemDC, hPenRed);
-	//SelectObject(hMemDC, hPenRed);
-	//SetPolyFillMode(hMemDC, WINDING);
-
-	//Polygon(hMemDC, scene2Poly, 4);
-	RECT rgn = { 630, 840, 720, 940 };
-	//Rectangle(hMemDC, 800, 420, 1120, 660);
-	//FillRect(hMemDC, &rgn, orange);
-	//Polygon(hMemDC, upperRect, 4);
 
 	mpreProcessor(orange);
 
@@ -1152,7 +910,7 @@ void sceneFour(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(13, 190, 17));
-	TextOut(hMemDC, 750, 310, "Generate Machine Code", 21);
+	TextOut(hMemDC, 730, 310, "Generate Machine Code", 21);
 
 	//obj
 
@@ -1174,11 +932,7 @@ void sceneFour(void)
 	SetTextColor(hMemDC, RGB(13, 190, 17));
 	TextOut(hMemDC, 945, 225, ".o", 2);
 
-	EndPaint(ghwnd, &ps);
-	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	InvalidateRect(ghwnd, NULL, NULL);
 	DeleteObject(hPenRed);
-	ReleaseDC(ghwnd, hdc);
 }
 
 void sceneFive(void)
@@ -1186,36 +940,19 @@ void sceneFive(void)
 
 	HPEN hPenRed;
 	HPEN hLinePen;
-	POINT scene2Poly[4] = { 800, 420, 1120, 420,
-							 1120, 660, 800, 660 };
 	POINT FileLib[5] = { 915, 170, 915, 270,
 					   1005, 270, 1005, 180,
 					   995, 170 };
 
-	/*
-	600, 840, 600, 940,
-	690, 940, 690, 850,
-	680, 840 };
-*/
-
-
+	
 	HBRUSH orange = CreateSolidBrush(RGB(255, 0, 255));
 	HBRUSH orangePoly = CreateSolidBrush(RGB(255, 0, 255));
-	HDC hdc;
-	PAINTSTRUCT ps;
-	hdc = GetDC(ghwnd);
-	hdc = BeginPaint(ghwnd, &ps);
-	hMemDC = CreateCompatibleDC(hdc);
-	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
-	SelectObject(hMemDC, hBitmap);
+
 	linesBackground();
 	//refPoints();
 
 	hPenRed = choosePenColor(0, 5);
 	SelectObject(hMemDC, hPenRed);
-
-	//Polygon(hMemDC, scene2Poly, 4);
-	RECT rgn = { 630, 840, 720, 940 };
 
 	mpreProcessor(orange);
 
@@ -1238,7 +975,6 @@ void sceneFive(void)
 	// .i File
 	hPenRed = choosePenColor(4, 5);
 	SelectObject(hMemDC, hPenRed);
-	//FillRect(hMemDC, &rgn, orange);
 	Polygon(hMemDC, FileLib, 5);
 
 
@@ -1254,63 +990,115 @@ void sceneFive(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 0, 255));
-	TextOut(hMemDC, 940, 180, ".lib", 4);
+	TextOut(hMemDC, 935, 180, ".lib", 4);
 
 	HFONT hFontA = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFontA);
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 0, 255));
-	TextOut(hMemDC, 940, 225, ".a", 2);
+	TextOut(hMemDC, 935, 225, ".a", 2);
 
 	
-
-	EndPaint(ghwnd, &ps);
-	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	InvalidateRect(ghwnd, NULL, NULL);
 	DeleteObject(hPenRed);
-	ReleaseDC(ghwnd, hdc);
+
 }
 
 void sceneSix(void)
 {
 
-
 	HPEN hPenRed;
 	HPEN hLinePen;
-	POINT FileI[5] = { 350, 600, 350, 700,
-					   440, 700, 440, 610,
-					   430, 600 };
-
-	/*
-	600, 840, 600, 940,
-	690, 940, 690, 850,
-	680, 840 };
-*/
+	POINT FileExe[5] = { 915, 170, 915, 270,
+					   1005, 270, 1005, 180,
+					   995, 170 };
 
 
-	HBRUSH orange = CreateSolidBrush(RGB(255, 165, 0));
-	HBRUSH orangePoly = CreateSolidBrush(RGB(255, 165, 0));
-	HDC hdc;
-	PAINTSTRUCT ps;
-	hdc = GetDC(ghwnd);
-	hdc = BeginPaint(ghwnd, &ps);
-	hMemDC = CreateCompatibleDC(hdc);
-	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
-	SelectObject(hMemDC, hBitmap);
-	linesBackground2();
+
+
+	HBRUSH orange = CreateSolidBrush(RGB(0, 191, 255));
+	HBRUSH orangePoly = CreateSolidBrush(RGB(255, 0, 255));
+
+	linesBackground();
 	//refPoints();
 
 	hPenRed = choosePenColor(0, 5);
 	SelectObject(hMemDC, hPenRed);
 
+	mpreProcessor(orange);
 
-	HFONT hFont = CreateFont(35, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	//Executable
+	hPenRed = choosePenColor(8, 5);
+	SelectObject(hMemDC, hPenRed);
+
+	HFONT hFontExeFile = CreateFont(70, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontExeFile);
+	SetBkMode(hMemDC, OPAQUE);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(0, 191, 255));
+	TextOut(hMemDC, 745, 55, "Executable File", 15);
+
+
+	//Executable
+	hPenRed = choosePenColor(8, 5);
+	SelectObject(hMemDC, hPenRed);
+	Polygon(hMemDC, FileExe, 5);
+
+	//.exe File
+	HFONT hFontExe = CreateFont(38, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontExe);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(0, 191, 255));
+	TextOut(hMemDC, 928, 195, ".exe", 4);
+
+
+	HFONT hFont1 = CreateFont(50, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFont1);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SelectObject(hMemDC, hPenRed);
+	SetTextColor(hMemDC, RGB(0, 191, 255));
+	TextOut(hMemDC, 660, 310, "Executable Machine Code .exe", 28);
+
+	DeleteObject(hPenRed);
+	
+}
+
+void sceneSeven(void)
+{
+
+
+	HPEN hPenRed;
+	HPEN hLinePen;
+	POINT FileI[5] = { 360, 500, 360, 600,
+					   450, 600, 450, 510,
+					   440, 500 };
+
+	HBRUSH orange = CreateSolidBrush(RGB(255, 165, 0));
+	HBRUSH orangePoly = CreateSolidBrush(RGB(255, 165, 0));
+
+	linesBackground2();
+	//refPoints();
+
+	hPenRed = choosePenColor(8, 5);
+	HFONT hFont = CreateFont(50, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont);
 	//SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
+
+	SetTextColor(hMemDC, (0, 191, 255));
+	TextOut(hMemDC, 640, 740, "When Code Meets The Machine", 27);
+
+	hPenRed = choosePenColor(0, 5);
+	SelectObject(hMemDC, hPenRed);
+
+
+	HFONT hFontPre = CreateFont(35, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFontPre);
+	SetBkMode(hMemDC, OPAQUE);
+	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 165, 0));
-	TextOut(hMemDC, 300, 450, "Pre-Processor", 13);
+	TextOut(hMemDC, 310, 370, "Pre-Processor", 13);
 
 
 	// .i File
@@ -1324,20 +1112,20 @@ void sceneSix(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 165, 0));
-	TextOut(hMemDC, 375, 610, ".ii", 3);
+	TextOut(hMemDC, 385, 510, ".ii", 3);
 
 	HFONT hFontI = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFontI);
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 165, 0));
-	TextOut(hMemDC, 375, 650, ".i", 2);
+	TextOut(hMemDC, 385, 550, ".i", 2);
 
 	//Compiler
 
-	POINT FileAsm[5] = { 620, 600, 620, 700,
-					   710, 700, 710, 610,
-					   700, 600 };
+	POINT FileAsm[5] = { 640, 500, 640, 600,
+					   730, 600, 730, 510,
+					   720, 500 };
 	hPenRed = choosePenColor(8, 5);
 	SelectObject(hMemDC, hPenRed);
 	Polygon(hMemDC, FileAsm, 5);
@@ -1347,14 +1135,14 @@ void sceneSix(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(2, 151, 255));
-	TextOut(hMemDC, 625, 620, ".asm", 4);
+	TextOut(hMemDC, 645, 510, ".asm", 4);
 
 	HFONT hFontS = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFontS);
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(2, 151, 255));
-	TextOut(hMemDC, 625, 650, ".s", 2);
+	TextOut(hMemDC, 645, 550, ".s", 2);
 
 	hPenRed = choosePenColor(8, 5);
 	SelectObject(hMemDC, hPenRed);
@@ -1364,12 +1152,12 @@ void sceneSix(void)
 	SetBkMode(hMemDC, OPAQUE);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(2, 151, 255));
-	TextOut(hMemDC, 600, 450, "Compiler", 8);
+	TextOut(hMemDC, 620, 370, "Compiler", 8);
 
 	//Assembler
-	POINT FileObj[5] = { 880, 600, 880, 700,
-					   970, 700, 970, 610,
-					   960, 600 };
+	POINT FileObj[5] = { 900, 500, 900, 600,
+					   990, 600, 990, 510,
+					   980, 500 };
 	hPenRed = choosePenColor(10, 5);
 	SelectObject(hMemDC, hPenRed);
 	Polygon(hMemDC, FileObj, 5);
@@ -1379,14 +1167,14 @@ void sceneSix(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(13, 190, 17));
-	TextOut(hMemDC, 895, 615, ".obj", 4);
+	TextOut(hMemDC, 915, 510, ".obj", 4);
 
 	HFONT hFontO = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFontO);
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(13, 190, 17));
-	TextOut(hMemDC, 895, 645, ".o", 2);
+	TextOut(hMemDC, 915, 550, ".o", 2);
 
 	hPenRed = choosePenColor(0, 5);
 	SelectObject(hMemDC, hPenRed);
@@ -1396,13 +1184,13 @@ void sceneSix(void)
 	SetBkMode(hMemDC, OPAQUE);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(13, 190, 17));
-	TextOut(hMemDC, 850, 450, "Assembler", 9);
+	TextOut(hMemDC, 870, 370, "Assembler", 9);
 
 
 	//Linker
-	POINT FileLib[5] = { 1125, 600, 1125, 700,
-					   1215, 700, 1215, 610,
-					   1205, 600 };
+	POINT FileLib[5] = { 1145, 500, 1145, 600,
+					   1235, 600, 1235, 510,
+					   1225, 500 };
 	hPenRed = choosePenColor(6, 5);
 	SelectObject(hMemDC, hPenRed);
 	Polygon(hMemDC, FileLib, 5);
@@ -1412,14 +1200,14 @@ void sceneSix(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 0, 255));
-	TextOut(hMemDC, 1145, 615, ".lib", 4);
+	TextOut(hMemDC, 1165, 510, ".lib", 4);
 
 	HFONT hFontA = CreateFont(40, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFontA);
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 0, 255));
-	TextOut(hMemDC, 1145, 645, ".a", 2);
+	TextOut(hMemDC, 1165, 550, ".a", 2);
 	
 
 	hPenRed = choosePenColor(0, 5);
@@ -1430,7 +1218,7 @@ void sceneSix(void)
 	SetBkMode(hMemDC, OPAQUE);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(255, 0, 255));
-	TextOut(hMemDC, 1125, 450, "Linker", 6);
+	TextOut(hMemDC, 1145, 370, "Linker", 6);
 
 	//Executable
 	hPenRed = choosePenColor(8, 5);
@@ -1441,13 +1229,13 @@ void sceneSix(void)
 	SetBkMode(hMemDC, OPAQUE);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(0, 191, 255));
-	TextOut(hMemDC, 1325, 450, "Executable", 10);
+	TextOut(hMemDC, 1395, 370, "Executable", 10);
 
 
 	//Executable
-	POINT FileExe[5] = { 1360, 600, 1360, 700,
-					  1450, 700, 1450, 610,
-					   1440, 600 };
+	POINT FileExe[5] = { 1430, 500, 1430, 600,
+					  1520, 600, 1520, 510,
+					   1510, 500 };
 
 	hPenRed = choosePenColor(8, 5);
 	SelectObject(hMemDC, hPenRed);
@@ -1458,7 +1246,7 @@ void sceneSix(void)
 	SetBkMode(hMemDC, TRANSPARENT);
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(0, 191, 255));
-	TextOut(hMemDC, 1374, 625, ".exe", 4);
+	TextOut(hMemDC, 1442, 528, ".exe", 4);
 
 
 	POINT triangleOrange[3] = { 750, 890, 730, 870,
@@ -1470,11 +1258,7 @@ void sceneSix(void)
 	Polygon(hMemDC, triangleOrange, 3);
 	DeleteObject(orangePoly);*/
 
-	EndPaint(ghwnd, &ps);
-	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	InvalidateRect(ghwnd, NULL, NULL);
 	DeleteObject(hPenRed);
-	ReleaseDC(ghwnd, hdc);
 }
 
 void mpreProcessor(HBRUSH colorBrush)
