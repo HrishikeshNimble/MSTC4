@@ -23,7 +23,36 @@ typedef struct {
 Raindrop raindrops[DROP_COUNT];
 int screenWidth, screenHeight;
 
-// विंडो प्रोसीजर
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    WNDCLASS wc = { 0 };
+    HWND hwnd;
+    MSG msg;
+
+    wc.lpfnWndProc = WndProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = "FullscreenWaterfall";
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+
+    RegisterClass(&wc);
+
+    hwnd = CreateWindowEx(WS_EX_TOPMOST, wc.lpszClassName, "Realistic Waterfall Effect",
+        WS_POPUP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
+        NULL, NULL, hInstance, NULL);
+
+    ShowWindow(hwnd, SW_SHOWMAXIMIZED);
+    UpdateWindow(hwnd);
+
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    return 0;
+}
+
+
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     HDC hdc, hdcMem;
     HBITMAP hbmMem;
@@ -113,30 +142,3 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     return 0;
 }
 
-// मुख्य फ़ंक्शन (फुल स्क्रीन मोड में लाने के लिए)
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-    WNDCLASS wc = { 0 };
-    HWND hwnd;
-    MSG msg;
-
-    wc.lpfnWndProc = WndProc;
-    wc.hInstance = hInstance;
-    wc.lpszClassName = "FullscreenWaterfall";
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-
-    RegisterClass(&wc);
-
-    hwnd = CreateWindowEx(WS_EX_TOPMOST, wc.lpszClassName, "Realistic Waterfall Effect",
-        WS_POPUP, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
-        NULL, NULL, hInstance, NULL);
-
-    ShowWindow(hwnd, SW_SHOWMAXIMIZED);
-    UpdateWindow(hwnd);
-
-    while (GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-    return 0;
-}
