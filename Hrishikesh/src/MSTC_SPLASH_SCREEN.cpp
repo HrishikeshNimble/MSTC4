@@ -15,9 +15,14 @@
 #pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "Winmm.lib")
 
-#define TIMER_ID 1
+#define TIMER_ID 8
+#define TIMER_ID1 1
 #define TIMER_ID2 2
 #define TIMER_ID3 3
+#define TIMER_ID4 4
+#define TIMER_ID5 5
+#define TIMER_ID6 6
+#define TIMER_ID7 7
 #define MAX_POSITION 780
 #define INCREMENT 10
 #define NUM_POINTS 8
@@ -39,7 +44,7 @@ void sceneFive(void);
 void sceneSix(void);
 void sceneSeven(void);
 void mpreProcessor(HBRUSH);
-void gDataPoints(int, int);
+void gDataPoints(HPEN, HPEN);
 void dataPoints(void);
 void dataPointsY(void);
 void dataPointsNeg(int*, int);
@@ -47,7 +52,8 @@ void dataPointsNeg(int*, int);
 HWND ghwnd = NULL;
 HDC ghdc = NULL;
 BOOL gbFullScreen = FALSE;
-int *apt = NULL;
+int* apt = NULL;
+int dmax = 0;
 int* rightPoints = NULL;
 int* botPoints = NULL;
 WPARAM gwParam;
@@ -60,6 +66,7 @@ HBITMAP hBitmap = NULL;
 HDC hMemDC = NULL;
 int gcxScreen, gcyScreen;
 int sceneCounter = 1;
+int pointsCounter = 1;
 FILE* gpFile = NULL;
 BOOL renderPoints = FALSE;
 int rectSpeed = 1;
@@ -130,16 +137,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd); // VIMP
-	SetTimer(hwnd, TIMER_ID, 1, NULL);
-	SetTimer(hwnd, TIMER_ID2, 1, NULL);
-	SetTimer(hwnd, TIMER_ID3, 3000, NULL);
-
+	SetTimer(hwnd, TIMER_ID, 10, NULL);
+	SetTimer(hwnd, TIMER_ID1, 4000, NULL);
+	/*SetTimer(hwnd, TIMER_ID2, 4000, NULL);
+	SetTimer(hwnd, TIMER_ID3, 4000, NULL);
+	SetTimer(hwnd, TIMER_ID4, 4000, NULL);
+	SetTimer(hwnd, TIMER_ID5, 4000, NULL);
+	SetTimer(hwnd, TIMER_ID6, 4000, NULL);
+	SetTimer(hwnd, TIMER_ID7, 4000, NULL);*/
 	// 9. Message Loop
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
 
 	return((int)msg.wParam);
 }
@@ -227,28 +239,87 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
      case WM_TIMER:
-		 if (wParam == TIMER_ID) {
-			 sceneCounter = 1;
-			 InvalidateRect(hwnd, NULL, FALSE);
-		 }
-		 if (wParam == TIMER_ID2) {
-			 KillTimer(ghwnd, TIMER_ID);
-			 InvalidateRect(hwnd, NULL, FALSE);
-		 }
-		 if (wParam == TIMER_ID3) {
+		
+		/* if (wParam == TIMER_ID) {
 			
-			 sceneCounter++;
+			 if (sceneCounter == 2)
+			 {
+				
+			 }
+			 if (sceneCounter == 3)
+			 {
+				 KillTimer(ghwnd, TIMER_ID2);
+				 
+			 }
+			 if (sceneCounter == 4)
+			 {
+				 KillTimer(ghwnd, TIMER_ID3);
+			 }
+			 if (sceneCounter == 5)
+			 {
+				 KillTimer(ghwnd, TIMER_ID4);
+			 }
+			 if (sceneCounter == 6)
+			 {
+				 KillTimer(ghwnd, TIMER_ID5);
+			 }
+			 
 			 InvalidateRect(hwnd, NULL, FALSE);
-			 if (sceneCounter > 7)
+			 
+		 }*/
+		 if (wParam == TIMER_ID) {
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 if (wParam == TIMER_ID1) {
+			 SetTimer(hwnd, TIMER_ID2, 4000, NULL);
+			 sceneCounter = 2;
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 else if (wParam == TIMER_ID2) {
+			 SetTimer(hwnd, TIMER_ID3, 4000, NULL);
+			 KillTimer(ghwnd, TIMER_ID1);
+			 sceneCounter = 3;
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 else if (wParam == TIMER_ID3) {
+			 SetTimer(hwnd, TIMER_ID4, 4000, NULL);
+			 KillTimer(ghwnd, TIMER_ID2);
+			 sceneCounter = 4;
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 else if (wParam == TIMER_ID4) {
+			 SetTimer(hwnd, TIMER_ID5, 4000, NULL);
+			 KillTimer(ghwnd, TIMER_ID3);
+			 sceneCounter = 5;
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 else if (wParam == TIMER_ID5) {
+			 SetTimer(hwnd, TIMER_ID6, 4000, NULL);
+			 KillTimer(ghwnd, TIMER_ID4);
+			 sceneCounter = 6;
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 else if (wParam == TIMER_ID6) {
+			 SetTimer(hwnd, TIMER_ID7, 4000, NULL);
+			 KillTimer(ghwnd, TIMER_ID5);
+			 sceneCounter = 7;
+
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 else if (wParam == TIMER_ID7) {
+			 //SetTimer(hwnd, TIMER_ID1, 4000, NULL);
+			 if (sceneCounter >= 7)
 			 {
 
 				 sceneCounter = 7;
-				 KillTimer(ghwnd, TIMER_ID3);
+				 KillTimer(ghwnd, TIMER_ID6);
+				 KillTimer(ghwnd, TIMER_ID);
+				 KillTimer(ghwnd, TIMER_ID7);
 			 }
+			 //sceneCounter++;
+			 InvalidateRect(hwnd, NULL, FALSE);
 		 }
-		
-
-		break;
+			break;
 	 case WM_CLOSE:
 		 DestroyWindow(hwnd);
 		 break;
@@ -382,13 +453,11 @@ void display(void)
 	}
 	if (sceneCounter == 2)
 	{
-		renderPoints = TRUE;
 		sceneTwo();
 	}
 	if (sceneCounter == 3)
 	{
-		KillTimer(ghwnd, TIMER_ID2);
-		renderPoints = FALSE;
+		
 		sceneThree();
 	}
 	if (sceneCounter == 4)
@@ -416,107 +485,15 @@ void display(void)
 	//sceneSeven();
 
 	
-	EndPaint(ghwnd, &ps);
+	
 	BitBlt(hdc, 0, 0, gcxScreen, gcyScreen, hMemDC, 0, 0, SRCCOPY);
-	InvalidateRect(ghwnd, NULL, NULL);
-
 	ReleaseDC(ghwnd, hdc);
-}
-
-void refPoints(void)
-{
-	HPEN hPenRed;
-	hPenRed = choosePenColor(2, 15);
-	SelectObject(hMemDC, hPenRed);
-	MoveToEx(hMemDC, 0, 100, NULL);
-	LineTo(hMemDC, 0, 100);
-
-	MoveToEx(hMemDC, 0, 200, NULL);
-	LineTo(hMemDC, 0, 200);
-
-	MoveToEx(hMemDC, 0, 300, NULL);
-	LineTo(hMemDC, 0, 300);
-
-	MoveToEx(hMemDC, 0, 400, NULL);
-	LineTo(hMemDC, 0, 400);
-
-	MoveToEx(hMemDC, 0, 500, NULL);
-	LineTo(hMemDC, 0, 500);
-
-	MoveToEx(hMemDC, 0, 600, NULL);
-	LineTo(hMemDC, 0, 600);
-
-	MoveToEx(hMemDC, 0, 700, NULL);
-	LineTo(hMemDC, 0, 700);
-
-	MoveToEx(hMemDC, 0, 800, NULL);
-	LineTo(hMemDC, 0, 800);
-
-	MoveToEx(hMemDC, 0, 900, NULL);
-	LineTo(hMemDC, 0, 900);
-
-	MoveToEx(hMemDC, 0, 1000, NULL);
-	LineTo(hMemDC, 0, 1000);
-/************************************************************************/
-	MoveToEx(hMemDC, 100, 0, NULL);
-	LineTo(hMemDC, 100, 0);
-
-	MoveToEx(hMemDC, 200, 0, NULL);
-	LineTo(hMemDC,200, 0);
-
-	MoveToEx(hMemDC, 300, 0, NULL);
-	LineTo(hMemDC, 300, 0);
-
-	MoveToEx(hMemDC, 400, 0, NULL);
-	LineTo(hMemDC, 400, 0);
-
-	MoveToEx(hMemDC, 500, 0, NULL);
-	LineTo(hMemDC, 500, 0);
-
-	MoveToEx(hMemDC, 600, 0, NULL);
-	LineTo(hMemDC, 600, 0);
-
-	MoveToEx(hMemDC, 700, 0, NULL);
-	LineTo(hMemDC, 700, 0);
-
-	MoveToEx(hMemDC, 800, 0, NULL);
-	LineTo(hMemDC,800, 0);
-
-	MoveToEx(hMemDC, 900, 0, NULL);
-	LineTo(hMemDC, 900, 0);
-
-	MoveToEx(hMemDC, 1000, 0, NULL);
-	LineTo(hMemDC, 1000, 0);
-
-	MoveToEx(hMemDC, 1100, 0, NULL);
-	LineTo(hMemDC, 1100, 0);
-
-	MoveToEx(hMemDC, 1200, 0, NULL);
-	LineTo(hMemDC, 1200, 0);
-
-	MoveToEx(hMemDC, 1300, 0, NULL);
-	LineTo(hMemDC, 1300, 0);
-
-	MoveToEx(hMemDC, 1400, 0, NULL);
-	LineTo(hMemDC, 1400, 0);
-
-	MoveToEx(hMemDC, 1500, 0, NULL);
-	LineTo(hMemDC, 1500, 0);
-
-	MoveToEx(hMemDC, 1600, 0, NULL);
-	LineTo(hMemDC, 1600, 0);
-
-	MoveToEx(hMemDC, 1700, 0, NULL);
-	LineTo(hMemDC, 1700, 0);
-
-	MoveToEx(hMemDC, 1800, 0, NULL);
-	LineTo(hMemDC, 1800, 0);
-
-	MoveToEx(hMemDC, 1900, 0, NULL);
-	LineTo(hMemDC, 1900, 0);
-
+	DeleteDC(hMemDC);
+	EndPaint(ghwnd, &ps);
 	
 }
+
+
 
 void sceneOne(void)
 {
@@ -634,184 +611,15 @@ void sceneTwo(void)
 	SetTextColor(hMemDC, RGB(255, 165, 0));
 	TextOut(hMemDC, 940, 225, ".i", 2);
 
-	gDataPoints(0,780);
-	//gDataPoints(100, 200);
-	//gDataPoints(200, 300);
-	//gDataPoints(300, 400);
-	//gDataPoints(400, 500);
-	//gDataPoints(500, 600);
-	//gDataPoints(600, 700);
+
+	gDataPoints(choosePenColor(0, 10), choosePenColor(4, 10));
+	
 	
 	
 	
 	
 
 	DeleteObject(hPenRed);
-
-}
-
-void gDataPoints(int initialVal, int maxPosition)
-{
-	HPEN hPenRed = choosePenColor(0, 10);
-	SelectObject(hMemDC, hPenRed);
-	
-	int llp = 0;
-	int llpp = 0;
-	int currVal = 0;
-	static int dmax = initialVal;
-	currVal = initialVal;
-
-	if(initialVal < maxPosition)
-	{
-			apt = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
-			for (int j = 0; j < NUM_POINTS; j++)
-			{
-				apt[(j * 2) + 0] = dmax;
-				apt[(j * 2) + 1] = 435 + (j * 30);
-
-
-				MoveToEx(hMemDC, apt[(j * 2) + 0], apt[(j * 2) + 1], NULL);
-				LineTo(hMemDC, apt[(j * 2) + 0], apt[(j * 2) + 1]);
-
-
-				llp = (j * 2) + 0;
-				llpp = (j * 2) + 1;
-				fprintf(gpFile, "apt[%d] = %d\n", llp, apt[(j * 2) + 0]);
-				fprintf(gpFile, "apt[%d] = %d\n", llpp, apt[(j * 2) + 1]);
-			}
-			fprintf(gpFile, "dmax = %d\n", dmax);
-			//InvalidateRect(ghwnd, NULL, NULL);
-			dmax++;
-			if (initialVal >= maxPosition)
-			{
-
-				initialVal = currVal;
-			}
-			free(apt);
-	}
-	
-}
-
-void dataPoints(void)
-{
-	HPEN hPenRed = choosePenColor(4, 10);
-	SelectObject(hMemDC, hPenRed);
-	int dmax = MAX_POSITION;
-	int xNeg = 1140;
-	int* apt = NULL;
-	apt = (int*)malloc(sizeof(int) * dmax * NUM_POINTS);
-
-	for (int i = 0; i < dmax; i++)
-	{
-		for (int j = 0; j < NUM_POINTS; j++)
-		{
-			apt[(i * NUM_POINTS) + j + 0] = 1920 - i;
-			apt[(i * NUM_POINTS) + j + 1] = 435 + (j * 30);
-
-				/*MoveToEx(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1], NULL);
-				LineTo(hMemDC, apt[(i * NUM_POINTS) + j + 0], apt[(i * NUM_POINTS) + j + 1]);*/
-		}
-	}
-	/*int k = 0;
-	if (k < (dmax * NUM_POINTS))
-	{
-		MoveToEx(hMemDC, apt[k* NUM_POINTS +0], apt[k * NUM_POINTS + 1], NULL);
-		LineTo(hMemDC, apt[k * NUM_POINTS + 0], apt[k * NUM_POINTS + 1]);
-		k++;
-	}
-	*/
-	free(apt);
-	apt = NULL;
-}
-
-void dataPointsY(void)
-{
-
-	HPEN hPenRed = choosePenColor(5, 10);
-	SelectObject(hMemDC, hPenRed);
-	int dmax = 400;
-	int xNeg = 11;
-	int* apt = NULL;
-	apt = (int*)malloc(sizeof(int) * dmax * 11);
-
-	for (int i = 0; i < dmax; i++)
-	{
-		for (int j = 0; j < xNeg; j++)
-		{
-			apt[(i * xNeg) + j + 0] = 810 + (j * 30);
-			apt[(i * xNeg) + j + 1] = 680 + i;
-
-			MoveToEx(hMemDC, apt[(i * xNeg) + j + 0], apt[(i * xNeg) + j + 1], NULL);
-			LineTo(hMemDC, apt[(i * xNeg) + j + 0], apt[(i * xNeg) + j + 1]);
-		}
-	}
-
-	free(apt);
-	apt = NULL;
-
-	//HPEN hPenRed = choosePenColor(4, 10);
-	//SelectObject(hMemDC, hPenRed);
-	//int j = 0;
-	//if (j <= 500)
-	//{
-	//	for (int i = 0; i < NUM_POINTS; i++) {
-	//		int x = apt[i];
-	//		int y = yConst;
-	//		MoveToEx(hMemDC, x, y, NULL);
-	//		LineTo(hMemDC, x, y);
-	//		// Increment point positions and reset if max is exceeded
-	//		apt[i] += INCREMENT;
-	//		if (apt[i] > MAX_POSITION) {
-	//			apt[i] = i * INCREMENT;  // Reset to the initial position
-
-
-	//		}
-	//	}
-
-	//	j++;
-	//	if (j == 500)
-	//	{
-	//		fprintf(gpFile, "dataPoints() -> j = %d.\n", j);
-	//		j = 500;
-	//		for (int i = 0; i < NUM_POINTS; i++) {
-	//			apt[i] = 0;
-	//		}
-
-	//	}
-	//}
-
-}
-
-void dataPointsNeg(int*apt, int yConst)
-{
-	HPEN hPenRed = choosePenColor(4, 10);
-	SelectObject(hMemDC, hPenRed);
-
-	if (k <= 500)
-	{
-		for (int i = 0; i < NUM_POINTS; i++) {
-			int x = apt[i];
-			int y = yConst;
-			MoveToEx(hMemDC, x, y, NULL);
-			LineTo(hMemDC, x, y);
-			// Increment point positions and reset if max is exceeded
-			apt[i] -= INCREMENT;
-			if (apt[i] < MAX_POSITION) {
-				apt[i] = 1920;  // Reset to the initial position
-			}
-		}
-
-		k++;
-		if (k == 500)
-		{
-			fprintf(gpFile, "dataPoints() -> j = %d.\n", j);
-			k = 500;
-			for (int i = 0; i < NUM_POINTS; i++) {
-				apt[i] = 0;
-			}
-
-		}
-	}
 
 }
 
@@ -868,6 +676,9 @@ void sceneThree(void)
 	SelectObject(hMemDC, hPenRed);
 	SetTextColor(hMemDC, RGB(2, 151, 255));
 	TextOut(hMemDC, 942, 225, ".s", 2);
+
+
+		gDataPoints(choosePenColor(4, 10), choosePenColor(9, 10));
 
 
 	DeleteObject(hPenRed);
@@ -932,6 +743,9 @@ void sceneFour(void)
 	SetTextColor(hMemDC, RGB(13, 190, 17));
 	TextOut(hMemDC, 945, 225, ".o", 2);
 
+	
+		gDataPoints(choosePenColor(9, 10), choosePenColor(2, 10));
+	
 	DeleteObject(hPenRed);
 }
 
@@ -999,7 +813,9 @@ void sceneFive(void)
 	SetTextColor(hMemDC, RGB(255, 0, 255));
 	TextOut(hMemDC, 935, 225, ".a", 2);
 
-	
+
+		gDataPoints(choosePenColor(2, 10), choosePenColor(6, 10));
+
 	DeleteObject(hPenRed);
 
 }
@@ -1060,6 +876,10 @@ void sceneSix(void)
 	SetTextColor(hMemDC, RGB(0, 191, 255));
 	TextOut(hMemDC, 660, 310, "Executable Machine Code .exe", 28);
 
+
+	gDataPoints(choosePenColor(6, 10), choosePenColor(8, 10));
+
+	
 	DeleteObject(hPenRed);
 	
 }
@@ -1261,6 +1081,505 @@ void sceneSeven(void)
 	DeleteObject(hPenRed);
 }
 
+void gDataPoints(HPEN horzPoints, HPEN vertPoints)
+{
+	SelectObject(hMemDC, horzPoints);
+	static int dmax = 0;
+	static int currVal = 0;
+	int* aptl = NULL;
+	if (dmax < 100)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = dmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		dmax++;
+		if (dmax >= 100)
+		{
+			dmax = currVal;
+		}
+	}
+
+	static int twoDmax = 100;
+	static int twoCurrVal = 100;
+
+	if (twoDmax < 200)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = twoDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		twoDmax++;
+		if (twoDmax >= 200)
+		{
+
+			twoDmax = twoCurrVal;
+		}
+	}
+
+	static int threeDmax = 200;
+	static int threeCurrVal = 200;
+
+	if (threeDmax < 300)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = threeDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		threeDmax++;
+		if (threeDmax >= 300)
+		{
+			threeDmax = threeCurrVal;
+		}
+	}
+
+	static int FourDmax = 300;
+	static int FourCurrVal = 300;
+
+	if (FourDmax < 400)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = FourDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		FourDmax++;
+		if (FourDmax >= 400)
+		{
+			FourDmax = FourCurrVal;
+		}
+	}
+
+	static int fiveDmax = 400;
+	static int fiveCurrVal = 400;
+
+	if (fiveDmax < 500)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = fiveDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		fiveDmax++;
+		if (fiveDmax >= 500)
+		{
+			fiveDmax = fiveCurrVal;
+		}
+	}
+
+	static int sixDmax = 500;
+	static int sixCurrVal = 500;
+
+	if (sixDmax < 600)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = sixDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		sixDmax++;
+		if (sixDmax >= 600)
+		{
+			sixDmax = sixCurrVal;
+		}
+	}
+
+	static int sevenDmax = 600;
+	static int sevenCurrVal = 600;
+
+	if (sevenDmax < 700)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = sevenDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		sevenDmax++;
+		if (sevenDmax >= 700)
+		{
+			sevenDmax = sevenCurrVal;
+		}
+	}
+
+	static int eightDmax = 700;
+	static int eightCurrVal = 700;
+
+	if (eightDmax < 800)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = eightDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		eightDmax++;
+		if (eightDmax >= 800)
+		{
+			eightDmax = eightCurrVal;
+		}
+	}
+
+	//Negative Points
+	static int NegDmax = 1920;
+	static int NegCurrVal = 1920;
+
+	if (NegDmax > 1820)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = NegDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		NegDmax--;
+		if (NegDmax <= 1820)
+		{
+			NegDmax = NegCurrVal;
+		}
+	}
+
+	static int twoNegDmax = 1820;
+	static int twoNegCurrVal = 1820;
+
+	if (twoNegDmax > 1720)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = twoNegDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		twoNegDmax--;
+		if (twoNegDmax <= 1720)
+		{
+			twoNegDmax = twoNegCurrVal;
+		}
+	}
+
+	static int threeNegDmax = 1720;
+	static int threeNegCurrVal = 1720;
+
+	if (threeNegDmax > 1620)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = threeNegDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		threeNegDmax--;
+		if (threeNegDmax <= 1620)
+		{
+			threeNegDmax = threeNegCurrVal;
+		}
+
+	}
+
+	static int fourNegDmax = 1620;
+	static int fourNegCurrVal = 1620;
+
+	if (fourNegDmax > 1520)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = fourNegDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		fourNegDmax--;
+		if (fourNegDmax <= 1520)
+		{
+			fourNegDmax = fourNegCurrVal;
+		}
+	}
+
+	static int fiveNegDmax = 1520;
+	static int fiveNegCurrVal = 1520;
+
+	if (fiveNegDmax > 1420)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = fiveNegDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		fiveNegDmax--;
+		if (fiveNegDmax <= 1420)
+		{
+			fiveNegDmax = fiveNegCurrVal;
+		}
+	}
+
+	static int sixNegDmax = 1420;
+	static int sixNegCurrVal = 1420;
+
+	if (sixNegDmax > 1320)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = sixNegDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		sixNegDmax--;
+		if (sixNegDmax <= 1320)
+		{
+			sixNegDmax = sixNegCurrVal;
+		}
+	}
+
+	static int sevenNegDmax = 1320;
+	static int sevenNegCurrVal = 1320;
+
+	if (sevenNegDmax > 1220)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = sevenNegDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		sevenNegDmax--;
+		if (sevenNegDmax <= 1220)
+		{
+			sevenNegDmax = sevenNegCurrVal;
+		}
+	}
+
+	static int eightNegDmax = 1220;
+	static int eightNegCurrVal = 1220;
+
+	if (eightNegDmax > 1120)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = eightNegDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		eightNegDmax--;
+		if (eightNegDmax <= 1120)
+		{
+			eightNegDmax = eightNegCurrVal;
+		}
+	}
+
+	//VertPoints
+	SelectObject(hMemDC, vertPoints);
+	static int xDmax = 680;
+	static int xCurrVal = 680;
+
+	if (xDmax < 780)
+	{
+		aptl = (int*)malloc(sizeof(int) * 11 * 2);
+		for (int j = 0; j < 11; j++)
+		{
+			aptl[(j * 2) + 0] = 810 + (j * 30);
+			aptl[(j * 2) + 1] = xDmax;
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		xDmax++;
+		if (xDmax >= 780)
+		{
+			xDmax = xCurrVal;
+		}
+	}
+
+	static int xtwoDmax = 780;
+	static int xtwoCurrVal = 780;
+
+	if (xtwoDmax < 880)
+	{
+		aptl = (int*)malloc(sizeof(int) * 11 * 2);
+		for (int j = 0; j < 11; j++)
+		{
+			aptl[(j * 2) + 0] = 810 + (j * 30);
+			aptl[(j * 2) + 1] = xtwoDmax;
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		xtwoDmax++;
+		if (xtwoDmax >= 880)
+		{
+			xtwoDmax = xtwoCurrVal;
+		}
+	}
+
+	static int xthreeDmax = 880;
+	static int xthreeCurrVal = 880;
+
+	if (xthreeDmax < 980)
+	{
+		aptl = (int*)malloc(sizeof(int) * 11 * 2);
+		for (int j = 0; j < 11; j++)
+		{
+			aptl[(j * 2) + 0] = 810 + (j * 30);
+			aptl[(j * 2) + 1] = xthreeDmax;
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		xthreeDmax++;
+		if (xthreeDmax >= 980)
+		{
+			xthreeDmax = xthreeCurrVal;
+		}
+	}
+
+	static int xfourDmax = 980;
+	static int xfourCurrVal = 980;
+
+	if (xfourDmax < 1080)
+	{
+		aptl = (int*)malloc(sizeof(int) * 11 * 2);
+		for (int j = 0; j < 11; j++)
+		{
+			aptl[(j * 2) + 0] = 810 + (j * 30);
+			aptl[(j * 2) + 1] = xfourDmax;
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+		}
+		free(aptl);
+		xfourDmax++;
+		if (xfourDmax >= 1080)
+		{
+			xfourDmax = xfourCurrVal;
+		}
+	}
+
+	/*if (twoDmax < 200)
+	{
+		aptl = (int*)malloc(sizeof(int) * NUM_POINTS * 2);
+		for (int j = 0; j < NUM_POINTS; j++)
+		{
+			aptl[(j * 2) + 0] = twoDmax;
+			aptl[(j * 2) + 1] = 435 + (j * 30);
+
+
+			MoveToEx(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1], NULL);
+			LineTo(hMemDC, aptl[(j * 2) + 0], aptl[(j * 2) + 1]);
+
+
+			llp = (j * 2) + 0;
+			llpp = (j * 2) + 1;
+			fprintf(gpFile, "apt[%d] = %d\n", llp, aptl[(j * 2) + 0]);
+			fprintf(gpFile, "apt[%d] = %d\n", llpp, aptl[(j * 2) + 1]);
+		}
+		free(aptl);
+		fprintf(gpFile, "dmax = %d\n", dmax);
+		InvalidateRect(ghwnd, NULL, NULL);
+		twoDmax++;
+		if (twoDmax >= 200)
+		{
+
+			twoDmax = twoCurrVal;
+			fprintf(gpFile, " Reset dmax = %d\n", dmax);
+		}
+	}*/
+}
+
 void mpreProcessor(HBRUSH colorBrush)
 {
 	HBRUSH orange = CreateSolidBrush(RGB(255, 165, 0));
@@ -1399,6 +1718,101 @@ void mpreProcessor(HBRUSH colorBrush)
 
 	DeleteObject(hPenRed);
 	DeleteObject(hLinePen);
+}
+
+void refPoints(void)
+{
+	HPEN hPenRed;
+	hPenRed = choosePenColor(2, 15);
+	SelectObject(hMemDC, hPenRed);
+	MoveToEx(hMemDC, 0, 100, NULL);
+	LineTo(hMemDC, 0, 100);
+
+	MoveToEx(hMemDC, 0, 200, NULL);
+	LineTo(hMemDC, 0, 200);
+
+	MoveToEx(hMemDC, 0, 300, NULL);
+	LineTo(hMemDC, 0, 300);
+
+	MoveToEx(hMemDC, 0, 400, NULL);
+	LineTo(hMemDC, 0, 400);
+
+	MoveToEx(hMemDC, 0, 500, NULL);
+	LineTo(hMemDC, 0, 500);
+
+	MoveToEx(hMemDC, 0, 600, NULL);
+	LineTo(hMemDC, 0, 600);
+
+	MoveToEx(hMemDC, 0, 700, NULL);
+	LineTo(hMemDC, 0, 700);
+
+	MoveToEx(hMemDC, 0, 800, NULL);
+	LineTo(hMemDC, 0, 800);
+
+	MoveToEx(hMemDC, 0, 900, NULL);
+	LineTo(hMemDC, 0, 900);
+
+	MoveToEx(hMemDC, 0, 1000, NULL);
+	LineTo(hMemDC, 0, 1000);
+	/************************************************************************/
+	MoveToEx(hMemDC, 100, 0, NULL);
+	LineTo(hMemDC, 100, 0);
+
+	MoveToEx(hMemDC, 200, 0, NULL);
+	LineTo(hMemDC, 200, 0);
+
+	MoveToEx(hMemDC, 300, 0, NULL);
+	LineTo(hMemDC, 300, 0);
+
+	MoveToEx(hMemDC, 400, 0, NULL);
+	LineTo(hMemDC, 400, 0);
+
+	MoveToEx(hMemDC, 500, 0, NULL);
+	LineTo(hMemDC, 500, 0);
+
+	MoveToEx(hMemDC, 600, 0, NULL);
+	LineTo(hMemDC, 600, 0);
+
+	MoveToEx(hMemDC, 700, 0, NULL);
+	LineTo(hMemDC, 700, 0);
+
+	MoveToEx(hMemDC, 800, 0, NULL);
+	LineTo(hMemDC, 800, 0);
+
+	MoveToEx(hMemDC, 900, 0, NULL);
+	LineTo(hMemDC, 900, 0);
+
+	MoveToEx(hMemDC, 1000, 0, NULL);
+	LineTo(hMemDC, 1000, 0);
+
+	MoveToEx(hMemDC, 1100, 0, NULL);
+	LineTo(hMemDC, 1100, 0);
+
+	MoveToEx(hMemDC, 1200, 0, NULL);
+	LineTo(hMemDC, 1200, 0);
+
+	MoveToEx(hMemDC, 1300, 0, NULL);
+	LineTo(hMemDC, 1300, 0);
+
+	MoveToEx(hMemDC, 1400, 0, NULL);
+	LineTo(hMemDC, 1400, 0);
+
+	MoveToEx(hMemDC, 1500, 0, NULL);
+	LineTo(hMemDC, 1500, 0);
+
+	MoveToEx(hMemDC, 1600, 0, NULL);
+	LineTo(hMemDC, 1600, 0);
+
+	MoveToEx(hMemDC, 1700, 0, NULL);
+	LineTo(hMemDC, 1700, 0);
+
+	MoveToEx(hMemDC, 1800, 0, NULL);
+	LineTo(hMemDC, 1800, 0);
+
+	MoveToEx(hMemDC, 1900, 0, NULL);
+	LineTo(hMemDC, 1900, 0);
+
+
 }
 
 void linesBackground(void)
