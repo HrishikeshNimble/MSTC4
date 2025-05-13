@@ -16,7 +16,7 @@ link temp/*.obj res/Splash_Screen.res user32.lib gdi32.lib /SUBSYSTEM:WINDOWS /O
 
 cd res
 
-del Splash_Screen.res
+
 
 cd ..
 

@@ -1,21 +1,12 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\GitHub\\MSTC4\\Hrishikesh\\",
+  "WorkspaceRootPath": "D:\\GitHub\\Hrishikesh\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GitHub\\MSTC4\\Hrishikesh\\src\\MSTC_SPLASH_SCREEN.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\MSTC_SPLASH_SCREEN.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GitHub\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\src\\screen.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GitHub\\MSTC4\\Hrishikesh\\include\\global.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\global.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GitHub\\MSTC4\\Hrishikesh\\include\\hvnGlobal.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:include\\hvnGlobal.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GitHub\\RTR-2021\\01-OpenGL\\02-PP\\01-Windows\\15-ShapesOnGraphPaper\\coloredTwoD.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{80A029F6-14F0-40AC-B4AA-6277C35F4BFD}|C:\\Users\\HRISHIKESH\\AppData\\Roaming\\Microsoft\\VisualStudio\\17.0_af444bb4\\SingleFileISense\\_sfi_adef47c0-ad66-46b1-a2f3-f931cfaf57a7_.vcxproj|D:\\GITHUB\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\INCLUDE\\GLOBAL.H||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -25,58 +16,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "global.h",
-              "DocumentMoniker": "D:\\GitHub\\MSTC4\\Hrishikesh\\include\\global.h",
-              "RelativeDocumentMoniker": "include\\global.h",
-              "ToolTip": "D:\\GitHub\\MSTC4\\Hrishikesh\\include\\global.h",
-              "RelativeToolTip": "include\\global.h",
-              "ViewState": "AQIAABIAAAAAAAAAAAAAADgAAAAnAAAA",
+              "DocumentMoniker": "D:\\GitHub\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\include\\global.h",
+              "RelativeDocumentMoniker": "..\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\include\\global.h",
+              "ToolTip": "D:\\GitHub\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\include\\global.h",
+              "RelativeToolTip": "..\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\include\\global.h",
+              "ViewState": "AQIAACEAAAAAAAAAAAAAAAwAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-29T04:28:55.857Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "hvnGlobal.h",
-              "DocumentMoniker": "D:\\GitHub\\MSTC4\\Hrishikesh\\include\\hvnGlobal.h",
-              "RelativeDocumentMoniker": "include\\hvnGlobal.h",
-              "ToolTip": "D:\\GitHub\\MSTC4\\Hrishikesh\\include\\hvnGlobal.h",
-              "RelativeToolTip": "include\\hvnGlobal.h",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-04-29T04:28:53.626Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "coloredTwoD.cpp",
-              "DocumentMoniker": "D:\\GitHub\\RTR-2021\\01-OpenGL\\02-PP\\01-Windows\\15-ShapesOnGraphPaper\\coloredTwoD.cpp",
-              "RelativeDocumentMoniker": "..\\..\\RTR-2021\\01-OpenGL\\02-PP\\01-Windows\\15-ShapesOnGraphPaper\\coloredTwoD.cpp",
-              "ToolTip": "D:\\GitHub\\RTR-2021\\01-OpenGL\\02-PP\\01-Windows\\15-ShapesOnGraphPaper\\coloredTwoD.cpp",
-              "RelativeToolTip": "..\\..\\RTR-2021\\01-OpenGL\\02-PP\\01-Windows\\15-ShapesOnGraphPaper\\coloredTwoD.cpp",
-              "ViewState": "AQIAALkBAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-04-29T03:00:11.613Z",
+              "WhenOpened": "2025-05-13T13:47:38.451Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "MSTC_SPLASH_SCREEN.cpp",
-              "DocumentMoniker": "D:\\GitHub\\MSTC4\\Hrishikesh\\src\\MSTC_SPLASH_SCREEN.cpp",
-              "RelativeDocumentMoniker": "src\\MSTC_SPLASH_SCREEN.cpp",
-              "ToolTip": "D:\\GitHub\\MSTC4\\Hrishikesh\\src\\MSTC_SPLASH_SCREEN.cpp",
-              "RelativeToolTip": "src\\MSTC_SPLASH_SCREEN.cpp",
-              "ViewState": "AQIAADwCAAAAAAAAAAAgwEoEAAAUAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-04-29T02:48:35.972Z",
+              "Title": "screen.c",
+              "DocumentMoniker": "D:\\GitHub\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\src\\screen.c",
+              "RelativeDocumentMoniker": "..\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\src\\screen.c",
+              "ToolTip": "D:\\GitHub\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\src\\screen.c",
+              "RelativeToolTip": "..\\MSTC4\\PUSHPAK\\PROJECT-SCREENS\\C -TO-ASSEMBLY-SCREEN\\src\\screen.c",
+              "ViewState": "AQIAAH0BAAAAAAAAAAAAAAIBAAAiAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-05-13T09:33:44.049Z",
               "EditorCaption": ""
             }
           ]
