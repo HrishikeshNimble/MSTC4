@@ -1,0 +1,3 @@
+#include "include\Splash_Screen.h"
+
+MY_WINDOW BITMAP MSTC2.bmp
