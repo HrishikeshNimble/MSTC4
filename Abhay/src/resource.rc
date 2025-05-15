@@ -1,0 +1,15 @@
+#include <windows.h>  // Include the Windows header
+#include "resource.h" // Include your resource header
+
+
+
+IDBITMAP1 BITMAP 27_april.bmp
+IDBITMAP2 BITMAP processor.bmp
+IDBITMAP3 BITMAP memory.bmp
+IDBITMAP4 BITMAP Input_devices.bmp
+IDBITMAP5 BITMAP output_devices.bmp
+
+
+//SONG WAVE song.WAV
+
+
