@@ -1,10 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\GitHub\\Direct2D\\Hrishi\\",
+  "WorkspaceRootPath": "D:\\GitHub\\MSTC4\\Hrishi\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GitHub\\Direct2D\\Hrishi\\src\\MSTC_SPLASH_SCREEN.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GitHub\\MSTC4\\Hrishi\\src\\MSTC_SPLASH_SCREEN.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\MSTC_SPLASH_SCREEN.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\MyCodes\\ARTR\\01-Vulkan\\01-Windows\\02-Bluescreen\\21-Validation\\VK.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,15 +17,28 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "VK.c",
+              "DocumentMoniker": "D:\\MyCodes\\ARTR\\01-Vulkan\\01-Windows\\02-Bluescreen\\21-Validation\\VK.c",
+              "RelativeDocumentMoniker": "..\\..\\..\\MyCodes\\ARTR\\01-Vulkan\\01-Windows\\02-Bluescreen\\21-Validation\\VK.c",
+              "ToolTip": "D:\\MyCodes\\ARTR\\01-Vulkan\\01-Windows\\02-Bluescreen\\21-Validation\\VK.c",
+              "RelativeToolTip": "..\\..\\..\\MyCodes\\ARTR\\01-Vulkan\\01-Windows\\02-Bluescreen\\21-Validation\\VK.c",
+              "ViewState": "AQIAAE8FAAAAAAAAAAAEwGcFAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-05-21T08:47:08.494Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "MSTC_SPLASH_SCREEN.cpp",
-              "DocumentMoniker": "D:\\GitHub\\Direct2D\\Hrishi\\src\\MSTC_SPLASH_SCREEN.cpp",
+              "DocumentMoniker": "D:\\GitHub\\MSTC4\\Hrishi\\src\\MSTC_SPLASH_SCREEN.cpp",
               "RelativeDocumentMoniker": "src\\MSTC_SPLASH_SCREEN.cpp",
-              "ToolTip": "D:\\GitHub\\Direct2D\\Hrishi\\src\\MSTC_SPLASH_SCREEN.cpp",
+              "ToolTip": "D:\\GitHub\\MSTC4\\Hrishi\\src\\MSTC_SPLASH_SCREEN.cpp",
               "RelativeToolTip": "src\\MSTC_SPLASH_SCREEN.cpp",
               "ViewState": "AQIAAO0CAAAAAAAAAAAAABkDAAATAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
