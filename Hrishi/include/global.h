@@ -15,6 +15,7 @@
 #define VISULIZER_SKYBLUE_PEN 8
 #define VISULIZER_COBALTBLUE_PEN 9
 #define VISULIZER_OLIVEGREEN_PEN 10
+#define VISULIZER_BLACK_PEN 12
 
 #ifndef size_t
 #define size_t long int
@@ -41,7 +42,7 @@ typedef struct tagVector
 }VECTOR,*PVECTOR;
 
 
-
+COLORREF black = RGB(0, 0, 0);
 COLORREF red=RGB(255,0,0); 
 COLORREF green=RGB(0,255,0); 
 COLORREF blue=RGB(0,0,255); 

@@ -23,6 +23,9 @@
 #define TIMER_ID5 5
 #define TIMER_ID6 6
 #define TIMER_ID7 7
+#define INTRO_TIMER_ID1 11
+#define INTRO_TIMER_ID2 12
+#define INTRO_TIMER_ID3 13
 #define NUM_POINTS 8
 
 HPEN choosePenColor(int, BRUSH_SIZE);
@@ -30,8 +33,11 @@ void ToggleFullScreen(void);
 void uninitialize(void);
 void display(void);
 /******************************************/
+void refPoints(void);
 void linesBackground(HPEN);
 void linesBackground2(void);
+void sceneIntro(void);
+void sceneIntro1(void);
 void sceneOne(void);
 void sceneTwo(void);
 void sceneThree(void);
@@ -41,6 +47,8 @@ void sceneSix(void);
 void sceneSeven(void);
 void sceneEight(void);
 void mpreProcessor(HBRUSH);
+void dMMovingLine(HDC, HGDIOBJ, int, int, int);
+void dCircle(HDC, HGDIOBJ, int, int, int);
 void xIncreRenderPoints(HPEN, int, int, int,int*);
 void xDecreRenderPoints(HPEN, int, int, int, int*);
 void yDecreRenderPoints(HPEN, int, int, int, int*);
@@ -57,7 +65,8 @@ PAINTSTRUCT ps;
 HBITMAP hBitmap4 = NULL;
 
 int gcxScreen, gcyScreen;
-int sceneCounter = 1;
+int sceneCounter = 0;
+int introSceneCounter = 1;
 int pointsCounter = 1;
 int increment = 2;
 
@@ -76,6 +85,7 @@ RenderPoints xdrenderPoints_struct[8];
 RenderPoints ydrenderPoints_struct[4];
 RenderPoints frenderPoints_struct[22];
 RenderPoints ffrenderPoints_struct[3];
+int xz = 0;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCmdShow) //ncmwindow show the window on how it should be shown e.g. maximized minimized or hidden etc.
 {
@@ -138,13 +148,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	UpdateWindow(hwnd); // VIMP
 
 	SetTimer(hwnd, TIMER_ID, 50, NULL);
-	SetTimer(hwnd, TIMER_ID1, 8000, NULL);
-	SetTimer(hwnd, TIMER_ID2, 12000, NULL);
-	SetTimer(hwnd, TIMER_ID3, 15000, NULL);
-	SetTimer(hwnd, TIMER_ID4, 18000, NULL);
-	SetTimer(hwnd, TIMER_ID5, 21000, NULL);
-	SetTimer(hwnd, TIMER_ID6, 24000, NULL);
-	SetTimer(hwnd, TIMER_ID7, 29000, NULL);
+	SetTimer(hwnd, INTRO_TIMER_ID1, 9000, NULL);
+	SetTimer(hwnd, INTRO_TIMER_ID2, 24000, NULL);
+	SetTimer(hwnd, TIMER_ID1, 28000, NULL);
+	SetTimer(hwnd, TIMER_ID2, 32000, NULL);
+	SetTimer(hwnd, TIMER_ID3, 36000, NULL);
+	SetTimer(hwnd, TIMER_ID4, 40000, NULL);
+	SetTimer(hwnd, TIMER_ID5, 44000, NULL);
+	SetTimer(hwnd, TIMER_ID6, 48000, NULL);
+	SetTimer(hwnd, TIMER_ID7, 52000, NULL);
 
 	PlaySound(MAKEINTRESOURCE(MYAUDIO), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC);
 
@@ -172,15 +184,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	{
 		// very 1st Msg
 	case WM_CREATE:
-		hBitmap4 = LoadBitmap((HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE), MAKEINTRESOURCE(MY_WINDOW));
-		if (hBitmap4 == NULL)
-		{
-			MessageBox(hwnd, TEXT("Failed to load bitmap4!"), TEXT("Error"), MB_ICONERROR);
-		}
-		else
-		{
-			fprintf(gpFile, "hBitmap4 -> Texture loaded successfully.\n");
-		}
+		
     	break;
 
         case WM_SIZE: 
@@ -229,52 +233,65 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		 {
 			 InvalidateRect(hwnd, NULL, FALSE);
 		 }
-
+		 if (wParam == INTRO_TIMER_ID1)
+		 {
+			 introSceneCounter = 2; //intro scene 2
+			 InvalidateRect(hwnd, NULL, FALSE);
+		 }
+		 if (wParam == INTRO_TIMER_ID2)
+		 {
+			KillTimer(ghwnd, INTRO_TIMER_ID1);
+			introSceneCounter = -1; //scene 1
+			sceneCounter = 1;
+			InvalidateRect(hwnd, NULL, FALSE);
+			
+		 }
 		 if (wParam == TIMER_ID1)
 		 {
+			 KillTimer(ghwnd, INTRO_TIMER_ID2);
 			 sceneCounter++; //scene 2
 			 InvalidateRect(hwnd, NULL, FALSE);
 		 }
 
-		 if (wParam == TIMER_ID2)
-		 {
-			 sceneCounter++; //scene 3
-			 KillTimer(ghwnd, TIMER_ID1);
-			 InvalidateRect(hwnd, NULL, FALSE);
-		 }
+		if (wParam == TIMER_ID2)
+		{
+		 sceneCounter++; //scene 3
+		 KillTimer(ghwnd, TIMER_ID1);
+		 InvalidateRect(hwnd, NULL, FALSE);
+		}
 
-		 if (wParam == TIMER_ID3)
-		 {
-			 sceneCounter++; //scene 4
-			 KillTimer(ghwnd, TIMER_ID2);
-			 InvalidateRect(hwnd, NULL, FALSE);
-		 }
-		 if (wParam == TIMER_ID4)
-		 {
-			 sceneCounter++; //scene 5
-			 KillTimer(ghwnd, TIMER_ID3);
-			 InvalidateRect(hwnd, NULL, FALSE);
-		 }
-		 if (wParam == TIMER_ID5)
-		 {
-			 sceneCounter++; //scene 6
-			 KillTimer(ghwnd, TIMER_ID4);
-			 InvalidateRect(hwnd, NULL, FALSE);
-		 }
-		 if (wParam == TIMER_ID6)
-		 {
-			 KillTimer(ghwnd, TIMER_ID5);
-			 sceneCounter++; //scene 7
-			 
-			 InvalidateRect(hwnd, NULL, FALSE);
-		 }
-		 if (wParam == TIMER_ID7)
-		 {
-			 KillTimer(ghwnd, TIMER_ID6);
-			 sceneCounter++; //scene 8
+		if (wParam == TIMER_ID3)
+		{
+		 sceneCounter++; //scene 4
+		 KillTimer(ghwnd, TIMER_ID2);
+		 InvalidateRect(hwnd, NULL, FALSE);
+		}
+		if (wParam == TIMER_ID4)
+		{
+		 sceneCounter++; //scene 5
+		 KillTimer(ghwnd, TIMER_ID3);
+		 InvalidateRect(hwnd, NULL, FALSE);
+		}
+		if (wParam == TIMER_ID5)
+		{
+		 sceneCounter++; //scene 6
+		 KillTimer(ghwnd, TIMER_ID4);
+		 InvalidateRect(hwnd, NULL, FALSE);
+		}
+		if (wParam == TIMER_ID6)
+		{
+		 KillTimer(ghwnd, TIMER_ID5);
+		 sceneCounter++; //scene 7
+		 
+		 InvalidateRect(hwnd, NULL, FALSE);
+		}
+		if (wParam == TIMER_ID7)
+		{
+		 KillTimer(ghwnd, TIMER_ID6);
+		 sceneCounter++; //scene 8
 
-			 InvalidateRect(hwnd, NULL, FALSE);
-		 }
+		 InvalidateRect(hwnd, NULL, FALSE);
+		}
 			break;
 	 case WM_CLOSE:
 		 DestroyWindow(hwnd);
@@ -381,6 +398,10 @@ HPEN choosePenColor(int penColor, BRUSH_SIZE brushSize)
 			hLinePen = CreatePen(PS_SOLID, brushSize, olivegreen);
 			textColor = olivegreen;
 			break;
+		case VISULIZER_BLACK_PEN:
+			hLinePen = CreatePen(PS_SOLID, brushSize, black);
+			textColor = black;
+			break;
 		default:
 			hLinePen=CreatePen(PS_SOLID, brushSize , orange);
 			textColor=orange;	
@@ -401,45 +422,14 @@ void initialize(void)
 		renderPoints_struct[i].burshColor = choosePenColor(0, 10);
 	}
 
-	/*renderPoints_struct[0].initialVal = 0;
-	renderPoints_struct[0].finalVal = 100;
-	renderPoints_struct[0].initPoints = 0;
-	renderPoints_struct[0].renderSpeed = increment;
-
-	renderPoints_struct[1].initialVal = 100;
-	renderPoints_struct[1].finalVal = 200;
-	renderPoints_struct[1].initPoints = 100;
-	renderPoints_struct[1].renderSpeed = increment;
-
-	renderPoints_struct[2].initialVal = 200;
-	renderPoints_struct[2].finalVal = 300;
-	renderPoints_struct[2].initPoints = 200;
-	renderPoints_struct[2].renderSpeed = increment;
-
-	renderPoints_struct[3].initialVal = 300;
-	renderPoints_struct[3].finalVal = 400;
-	renderPoints_struct[3].initPoints = 300;
-	renderPoints_struct[3].renderSpeed = increment;
-
-	renderPoints_struct[4].initialVal = 400;
-	renderPoints_struct[4].finalVal = 500;
-	renderPoints_struct[4].initPoints = 400;
-	renderPoints_struct[4].renderSpeed = increment;
-
-	renderPoints_struct[5].initialVal = 500;
-	renderPoints_struct[5].finalVal = 600;
-	renderPoints_struct[5].initPoints = 500;
-	renderPoints_struct[5].renderSpeed = increment;
-
-	renderPoints_struct[6].initialVal = 600;
-	renderPoints_struct[6].finalVal = 700;
-	renderPoints_struct[6].initPoints = 600;
-	renderPoints_struct[6].renderSpeed = increment;
-
-	renderPoints_struct[7].initialVal = 700;
-	renderPoints_struct[7].finalVal = 800;
-	renderPoints_struct[7].initPoints = 700;
-	renderPoints_struct[7].renderSpeed = increment;*/
+	if (renderPoints_struct == NULL)
+	{
+		fprintf(gpFile, "initialize() -> Failed to initialize renderPoints_struct...\n");
+	}
+	else
+	{
+		fprintf(gpFile, "initialize() -> renderPoints_struct initialized successfully...\n");
+	}
 
 	//X-Decrementing Points
 	for (int i = 0; i < 8; i++)
@@ -450,45 +440,14 @@ void initialize(void)
 		xdrenderPoints_struct[i].renderSpeed = increment;
 	}
 
-	//xdrenderPoints_struct[0].initialVal = 1920;
-	//xdrenderPoints_struct[0].finalVal = 1820;
-	//xdrenderPoints_struct[0].initPoints = 1920;
-	//xdrenderPoints_struct[0].renderSpeed = increment;
-
-	//xdrenderPoints_struct[1].initialVal = 1820;
-	//xdrenderPoints_struct[1].finalVal = 1720;
-	//xdrenderPoints_struct[1].initPoints = 1820;
-	//xdrenderPoints_struct[1].renderSpeed = increment;
-
-	//xdrenderPoints_struct[2].initialVal = 1720;
-	//xdrenderPoints_struct[2].finalVal = 1620;
-	//xdrenderPoints_struct[2].initPoints = 1720;
-	//xdrenderPoints_struct[2].renderSpeed = increment;
-
-	//xdrenderPoints_struct[3].initialVal = 1620;
-	//xdrenderPoints_struct[3].finalVal = 1520;
-	//xdrenderPoints_struct[3].initPoints = 1620;
-	//xdrenderPoints_struct[3].renderSpeed = increment;
-
-	//xdrenderPoints_struct[4].initialVal = 1520;
-	//xdrenderPoints_struct[4].finalVal = 1420;
-	//xdrenderPoints_struct[4].initPoints = 1520;
-	//xdrenderPoints_struct[4].renderSpeed = increment;
-
-	//xdrenderPoints_struct[5].initialVal = 1420;
-	//xdrenderPoints_struct[5].finalVal = 1320;
-	//xdrenderPoints_struct[5].initPoints = 1420;
-	//xdrenderPoints_struct[5].renderSpeed = increment;
-
-	//xdrenderPoints_struct[6].initialVal = 1320;
-	//xdrenderPoints_struct[6].finalVal = 1220;
-	//xdrenderPoints_struct[6].initPoints = 1320;
-	//xdrenderPoints_struct[6].renderSpeed = increment;
-
-	//xdrenderPoints_struct[7].initialVal = 1220;
-	//xdrenderPoints_struct[7].finalVal = 1120;
-	//xdrenderPoints_struct[7].initPoints = 1220;
-	//xdrenderPoints_struct[7].renderSpeed = increment;
+	if (xdrenderPoints_struct == NULL)
+	{
+		fprintf(gpFile, "initialize() -> Failed to initialize xdrenderPoints_struct...\n");
+	}
+	else
+	{
+		fprintf(gpFile, "initialize() -> xdrenderPoints_struct initialized successfully...\n");
+	}
 
 	// Y-Decrementing Points
 	for (int i = 0; i < 4; i++)
@@ -500,26 +459,15 @@ void initialize(void)
 
 	}
 
-	/*ydrenderPoints_struct[0].initialVal = 680;
-	ydrenderPoints_struct[0].finalVal = 780;
-	ydrenderPoints_struct[0].initPoints = 680;
-	ydrenderPoints_struct[0].renderSpeed = increment;
-	
-	ydrenderPoints_struct[1].initialVal = 780;
-	ydrenderPoints_struct[1].finalVal = 880;
-	ydrenderPoints_struct[1].initPoints = 780;
-	ydrenderPoints_struct[1].renderSpeed = increment;
-	
-	ydrenderPoints_struct[2].initialVal = 880;
-	ydrenderPoints_struct[2].finalVal = 980;
-	ydrenderPoints_struct[2].initPoints = 880;
-	ydrenderPoints_struct[2].renderSpeed = increment;
-	
-	ydrenderPoints_struct[3].initialVal = 980;
-	ydrenderPoints_struct[3].finalVal = 1080;
-	ydrenderPoints_struct[3].initPoints = 980;
-	ydrenderPoints_struct[3].renderSpeed = increment;*/
-	
+	if (ydrenderPoints_struct == NULL)
+	{
+		fprintf(gpFile, "initialize() -> Failed to initialize ydrenderPoints_struct...\n");
+	}
+	else
+	{
+		fprintf(gpFile, "initialize() -> ydrenderPoints_struct initialized successfully...\n");
+	}
+
 	// Final Render Points
 	for (int i = 0; i < 7; i++)//7
 	{
@@ -561,44 +509,25 @@ void initialize(void)
 		frenderPoints_struct[19 + i].initPoints = 1420 + (i * 50);
 		frenderPoints_struct[19 + i].renderSpeed = increment;
 	}
-
-	/*frenderPoints_struct[0].initialVal = 0;
-	frenderPoints_struct[0].finalVal = 50;
-	frenderPoints_struct[0].initPoints = 0;
-	frenderPoints_struct[0].renderSpeed = increment;
-
-	frenderPoints_struct[1].initialVal = 50;
-	frenderPoints_struct[1].finalVal = 100;
-	frenderPoints_struct[1].initPoints = 50;
-	frenderPoints_struct[1].renderSpeed = increment;
-
-	frenderPoints_struct[2].initialVal = 100;
-	frenderPoints_struct[2].finalVal = 150;
-	frenderPoints_struct[2].initPoints = 100;
-	frenderPoints_struct[2].renderSpeed = increment;
-
-	frenderPoints_struct[3].initialVal = 150;
-	frenderPoints_struct[3].finalVal = 200;
-	frenderPoints_struct[3].initPoints = 150;
-	frenderPoints_struct[3].renderSpeed = increment;
-
-	frenderPoints_struct[4].initialVal = 200;
-	frenderPoints_struct[4].finalVal = 250;
-	frenderPoints_struct[4].initPoints = 200;
-	frenderPoints_struct[4].renderSpeed = increment;
 	
-	frenderPoints_struct[5].initialVal = 250;
-	frenderPoints_struct[5].finalVal = 300;
-	frenderPoints_struct[5].initPoints = 250;
-	frenderPoints_struct[5].renderSpeed = increment;
-	
-	frenderPoints_struct[6].initialVal = 300;
-	frenderPoints_struct[6].finalVal = 350;
-	frenderPoints_struct[6].initPoints = 300;
-	frenderPoints_struct[6].renderSpeed = increment;*/
+	if (frenderPoints_struct == NULL)
+	{
+		fprintf(gpFile, "initialize() -> Failed to initialize frenderPoints_struct...\n");
+	}
+	else
+	{
+		fprintf(gpFile, "initialize() -> frenderPoints_struct initialized successfully...\n");
+	}
 
-	
-
+	hBitmap4 = LoadBitmap((HINSTANCE)GetWindowLongPtr(ghwnd, GWLP_HINSTANCE), MAKEINTRESOURCE(MY_WINDOW));
+	if (hBitmap4 == NULL)
+	{
+		MessageBox(ghwnd, TEXT("Failed to load bitmap4!"), TEXT("Error"), MB_ICONERROR);
+	}
+	else
+	{
+		fprintf(gpFile, "hBitmap4 -> Texture loaded successfully.\n");
+	}
 }
 
 void display(void)
@@ -609,6 +538,16 @@ void display(void)
 	hBitmap = CreateCompatibleBitmap(hdc, gcxScreen, gcyScreen);
 	HBITMAP hBitMDC = (HBITMAP)SelectObject(hMemDC, hBitmap);
 	
+	if (introSceneCounter == 1)
+	{
+		sceneIntro();
+	}
+	if (introSceneCounter == 2)
+	{
+		sceneIntro1();
+	}
+	fprintf(gpFile, "IntroSceneCounter %d\n", introSceneCounter);
+
 	if (sceneCounter == 1)
 	{
 		sceneOne();
@@ -747,17 +686,113 @@ void display(void)
 	EndPaint(ghwnd, &ps);
 }
 
+void sceneIntro(void)
+{
+	HPEN hPenRed;
+	//refPoints();
+	static int i = 0;
+	POINT aptplane1[6] = { 960 - i, 440, 1030 - i, 440,
+						   930 - i, 540, 1030 - i, 640,
+						   960 - i,640, 860 - i, 540, };
+
+	POINT aptplane2[6] = { 960 + i, 440, 890 + i, 440,
+						   990 + i, 540, 890 + i, 640,
+						   960 + i,640, 1060 + i, 540, };
+
+
+	POINT blackScreen[5] = { 960 - i, 440, 860 - i ,540, 960 - i, 640,
+							 300 - i, 640, 300 - i, 440};
+
+	POINT blackScreen1[5] = { 960 + i, 440, 990 + i ,540, 960 + i, 640,
+							 1620 + i, 640, 1620 + i, 440 };
+
+	HFONT hFont = CreateFont(150, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFont);
+	//SetTextAlign(hMemDC, TA_CENTER);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SetTextColor(hMemDC, RGB(255, 165, 0));
+	TextOut(hMemDC, 365, 470, "DECIMALS GROUP", 14);
+	//SetBkMode(hMemDC, OPAQUE);
+	DeleteObject(hFont);
+
+	
+	HBRUSH orange = CreateSolidBrush(RGB(0, 0, 0));
+	hPenRed = choosePenColor(5, 5);
+	SelectObject(hMemDC, orange);
+	SetPolyFillMode(hMemDC, ALTERNATE);
+	Polygon(hMemDC, blackScreen, 5);
+	Polygon(hMemDC, blackScreen1, 5);
+	DeleteObject(orange);
+	hPenRed = choosePenColor(5, 5);
+	SelectObject(hMemDC, hPenRed);
+	DeleteObject(hPenRed);
+
+	hPenRed = choosePenColor(5, 5);
+	SelectObject(hMemDC, hPenRed);
+	SetPolyFillMode(hMemDC, ALTERNATE);
+	Polygon(hMemDC, aptplane1, 6);
+	Polygon(hMemDC, aptplane2, 6);
+	DeleteObject(hPenRed);
+
+	i+=6;
+	if (i > 790)
+	{
+		i = 790;
+	}
+
+}
+
+void sceneIntro1(void)
+{
+	//refPoints();
+
+	int a = 540;
+	int b = 540;
+	HPEN hPen;
+	static int i = 0;
+	HFONT hFont = CreateFont(100, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+	SelectObject(hMemDC, hFont);
+	SetBkMode(hMemDC, TRANSPARENT);
+	SetTextColor(hMemDC, RGB(255, 165, 0));
+	TextOut(hMemDC, 210, 490, "Welcome To The Journey of MSTC-4", 32);
+	DeleteObject(hFont);
+
+	POINT blackScreen[4] = { -100 + i, 440, 1920 + i, 440,
+							 1920 + i, 640, -100 + i, 640 };
+
+	HBRUSH orange = CreateSolidBrush(RGB(0, 0, 0));
+	SelectObject(hMemDC, orange);
+	SetPolyFillMode(hMemDC, ALTERNATE);
+	Polygon(hMemDC, blackScreen, 4);
+	DeleteObject(orange);
+
+	i += 10;
+	
+	if (i > 1920)
+	{
+		i = 1920;
+	}
+
+	hPen = choosePenColor(0, 5);
+	dCircle(hMemDC, hPen, xz + b - a, b , 100);
+
+	hPen = choosePenColor(8, 3);
+	dMMovingLine(hMemDC, hPen, xz + b - a, b, 100);
+
+	xz += 10;
+	if (xz > 1815)
+	{
+		xz = 1815;
+	}
+
+	SetBkMode(hMemDC, OPAQUE);
+	
+
+}
+
 void sceneOne(void)
 {
 	HPEN hPenRed;
-	POINT aptsub[8] = { 270, 450, 330, 390,
-						1580, 390, 1640, 450,
-						1580, 450, 1560, 430,
-						350, 430, 330, 450 };
-	POINT apt[8] = { 270, 630, 330, 690,
-					 1580, 690, 1640, 630,
-					 1580, 630, 1560, 650,
-					 350, 650, 330, 630 };
 
 	POINT aptplane[10] = { 270, 450, 330, 390,
 						   1580, 390, 1640, 450,
@@ -781,10 +816,10 @@ void sceneOne(void)
 	Polygon(hMemDC, aptplane, 10);
 	Polygon(hMemDC, aptplane1, 6);
 	Polygon(hMemDC, aptplane2, 6);
-	hPenRed = choosePenColor(4, 5);
 	DeleteObject(hPenRed);
 	HFONT hFont = CreateFont(80, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
 	SelectObject(hMemDC, hFont);
+	
 	SetTextColor(hMemDC, RGB(255, 165, 0));
 	TextOut(hMemDC, 450, 500, "When Code Meets The Machine", 27);
 	DeleteObject(hFont);
@@ -985,8 +1020,6 @@ void sceneFour(void)
 	SetTextColor(hMemDC, RGB(13, 190, 17));
 	TextOut(hMemDC, 945, 225, ".o", 2);
 	DeleteObject(hFontO);
-	
-
 	DeleteObject(hPenRed);
 }
 
@@ -1299,7 +1332,6 @@ void sceneEight(void)
 	HBITMAP hOldBitmap = (HBITMAP)SelectObject(hdcMem1, hBitmap4);
 	static int i = 0;
 	static int j = 0;
-	// position & size
 	static int destX = 0;
 	static int destY = 0;
 	static int destWidth = 0;	
@@ -1330,7 +1362,6 @@ void sceneEight(void)
 	}
 	else if (j < 700 || i == 780)
 	{
-		fprintf(gpFile, "j %d\n", j);
 		destX = 790 - (j * 4);
 		destY = 415 - (j * 3);
 		destWidth = 340 + (j * 8);
@@ -1346,12 +1377,8 @@ void sceneEight(void)
 		}
 	}
 
-
-	// Cleanup
-	//SelectObject(hdcMem1, hBitmap4);
 	DeleteObject(hOldBitmap);
 	DeleteDC(hdcMem1);
-
 }
 
 void xIncreRenderPoints(HPEN brushColor,int initialVal,int finalVal,int speed, int* pointsVal)
@@ -2837,6 +2864,282 @@ void linesBackground2(void)
 	MoveToEx(hMemDC, 1220, 960, NULL);
 	LineTo(hMemDC, 1220, 960);
 	DeleteObject(hPenWhitedotbig);
+}
+
+void dMMovingLine(HDC fhdc, HGDIOBJ hgdiObj, int xinitVal, int yinitVal, int radius)
+{
+	SelectObject(fhdc, hgdiObj);
+	int x = 0;
+	int y = 0;
+	float radians = M_PI / 180.f;
+
+	static float i = 0.0f;
+	static float j = 45.0f;
+	static float k = 90.0f;
+	static float l = 135.0f;
+	static float m = 180.0f;
+	static float n = 225.0f;
+	static float o = 270.0f;
+	static float p = 315.0f;
+	static float q = 360.0f;
+
+	if (i < 360.0f)
+	{
+		x = radius * cos(i * radians) + xinitVal;
+		y = radius * sin(i * radians) + yinitVal;
+
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		i += 4;
+		if (i >= 360.0f)
+		{
+			i = 0.0f;
+		}
+	}
+
+	if (j < 360.0f)
+	{
+		x = radius * cos(j * radians) + xinitVal;
+
+		y = radius * sin(j * radians) + yinitVal;
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		j += 4;
+		if (j >= 360.0f)
+		{
+			j = 0.0f;
+		}
+	}
+
+	if (k < 360.0f)
+	{
+		x = radius * cos(k * radians) + xinitVal;
+
+		y = radius * sin(k * radians) + yinitVal;
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		k += 4;
+		if (k >= 360.0f)
+		{
+			k = 0.0f;
+		}
+	}
+
+	if (l < 360.0f)
+	{
+		x = radius * cos(l * radians) + xinitVal;
+
+		y = radius * sin(l * radians) + yinitVal;
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		l += 4;
+		if (l >= 360.0f)
+		{
+			l = 0.0f;
+		}
+	}
+
+	if (m < 360.0f)
+	{
+		x = radius * cos(m * radians) + xinitVal;
+
+		y = radius * sin(m * radians) + yinitVal;
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		m += 4;
+		if (m >= 360.0f)
+		{
+			m = 0.0f;
+		}
+	}
+
+	if (n < 360.0f)
+	{
+		x = radius * cos(n * radians) + xinitVal;
+
+		y = radius * sin(n * radians) + yinitVal;
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		n += 4;
+		if (n >= 360.0f)
+		{
+			n = 0.0f;
+		}
+	}
+
+	if (o < 360.0f)
+	{
+		x = radius * cos(o * radians) + xinitVal;
+
+		y = radius * sin(o * radians) + yinitVal;
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		o += 4;
+		if (o >= 360.0f)
+		{
+			o = 0.0f;
+		}
+	}
+
+	if (p < 360.0f)
+	{
+		x = radius * cos(p * radians) + xinitVal;
+
+		y = radius * sin(p * radians) + yinitVal;
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		p += 4;
+		if (p >= 360.0f)
+		{
+			p = 0.0f;
+		}
+	}
+
+	if (q < 360.0f)
+	{
+		x = radius * cos(q * radians) + xinitVal;
+
+		y = radius * sin(q * radians) + yinitVal;
+		MoveToEx(fhdc, xinitVal, yinitVal, NULL);
+		LineTo(fhdc, x, y);
+		q += 4;
+		if (q >= 360.0f)
+		{
+			q = 0.0f;
+		}
+	}
+	/*HPEN hPen = choosePenColor(0, 5);
+	hPen = choosePenColor(3, 15);
+	SelectObject(fhdc, hPen);
+	dLine(hMemDC, hPen, xz + 300, 300, xz + 300 + x, 200 + y);
+	dLine(hMemDC, hPen, xz + 300, 300, xz + 230, 230);
+
+	dLine(hMemDC, hPen, xz + 300, 300, xz + 200, 300);
+	dLine(hMemDC, hPen, xz + 300, 300, xz + 230, 370);
+
+	dLine(hMemDC, hPen, xz + 300, 300, xz + 300, 400);
+	dLine(hMemDC, hPen, xz + 300, 300, xz + 370, 370);
+
+	dLine(hMemDC, hPen, xz + 300, 300, xz + 400, 300);
+	dLine(hMemDC, hPen, xz + 300, 300, xz + 370, 230);
+	DeleteObject(hPen);*/
+
+
+	DeleteObject(hgdiObj);
+}
+
+void dCircle(HDC fhdc, HGDIOBJ hgdiObj, int xVal, int yVal, int radius)
+{
+	SelectObject(fhdc, hgdiObj);
+	int x = 0;
+	int y = 0;
+	float radians = M_PI / 180.f;
+	for (int i = 0; i < 360; i++)
+	{
+		x = radius * cos(i * radians) + xVal;
+		y = radius * sin(i * radians) + yVal;
+
+		MoveToEx(fhdc, x, y, NULL);
+		LineTo(fhdc, x, y);
+	}
+
+
+	DeleteObject(hgdiObj);
+}
+
+void refPoints(void)
+{
+	HPEN hPenRed;
+	hPenRed = choosePenColor(2, 15);
+	SelectObject(hMemDC, hPenRed);
+	MoveToEx(hMemDC, 0, 100, NULL);
+	LineTo(hMemDC, 0, 100);
+
+	MoveToEx(hMemDC, 0, 200, NULL);
+	LineTo(hMemDC, 0, 200);
+
+	MoveToEx(hMemDC, 0, 300, NULL);
+	LineTo(hMemDC, 0, 300);
+
+	MoveToEx(hMemDC, 0, 400, NULL);
+	LineTo(hMemDC, 0, 400);
+
+	MoveToEx(hMemDC, 0, 500, NULL);
+	LineTo(hMemDC, 0, 500);
+
+	MoveToEx(hMemDC, 0, 600, NULL);
+	LineTo(hMemDC, 0, 600);
+
+	MoveToEx(hMemDC, 0, 700, NULL);
+	LineTo(hMemDC, 0, 700);
+
+	MoveToEx(hMemDC, 0, 800, NULL);
+	LineTo(hMemDC, 0, 800);
+
+	MoveToEx(hMemDC, 0, 900, NULL);
+	LineTo(hMemDC, 0, 900);
+
+	MoveToEx(hMemDC, 0, 1000, NULL);
+	LineTo(hMemDC, 0, 1000);
+	/************************************************************************/
+	MoveToEx(hMemDC, 100, 0, NULL);
+	LineTo(hMemDC, 100, 0);
+
+	MoveToEx(hMemDC, 200, 0, NULL);
+	LineTo(hMemDC, 200, 0);
+
+	MoveToEx(hMemDC, 300, 0, NULL);
+	LineTo(hMemDC, 300, 0);
+
+	MoveToEx(hMemDC, 400, 0, NULL);
+	LineTo(hMemDC, 400, 0);
+
+	MoveToEx(hMemDC, 500, 0, NULL);
+	LineTo(hMemDC, 500, 0);
+
+	MoveToEx(hMemDC, 600, 0, NULL);
+	LineTo(hMemDC, 600, 0);
+
+	MoveToEx(hMemDC, 700, 0, NULL);
+	LineTo(hMemDC, 700, 0);
+
+	MoveToEx(hMemDC, 800, 0, NULL);
+	LineTo(hMemDC, 800, 0);
+
+	MoveToEx(hMemDC, 900, 0, NULL);
+	LineTo(hMemDC, 900, 0);
+
+	MoveToEx(hMemDC, 1000, 0, NULL);
+	LineTo(hMemDC, 1000, 0);
+
+	MoveToEx(hMemDC, 1100, 0, NULL);
+	LineTo(hMemDC, 1100, 0);
+
+	MoveToEx(hMemDC, 1200, 0, NULL);
+	LineTo(hMemDC, 1200, 0);
+
+	MoveToEx(hMemDC, 1300, 0, NULL);
+	LineTo(hMemDC, 1300, 0);
+
+	MoveToEx(hMemDC, 1400, 0, NULL);
+	LineTo(hMemDC, 1400, 0);
+
+	MoveToEx(hMemDC, 1500, 0, NULL);
+	LineTo(hMemDC, 1500, 0);
+
+	MoveToEx(hMemDC, 1600, 0, NULL);
+	LineTo(hMemDC, 1600, 0);
+
+	MoveToEx(hMemDC, 1700, 0, NULL);
+	LineTo(hMemDC, 1700, 0);
+
+	MoveToEx(hMemDC, 1800, 0, NULL);
+	LineTo(hMemDC, 1800, 0);
+
+	MoveToEx(hMemDC, 1900, 0, NULL);
+	LineTo(hMemDC, 1900, 0);
+
+	DeleteObject(hPenRed);
 }
 
 void uninitialize(void)
